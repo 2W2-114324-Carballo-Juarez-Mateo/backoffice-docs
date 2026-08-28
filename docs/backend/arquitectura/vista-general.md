@@ -46,7 +46,7 @@ flowchart TB
 
 | Componente | Rol |
 |---|---|
-| **API Gateway** | Punto de entrada único: routing, JWT, rate limiting, correlation ID, CORS, errores uniformes. Sin lógica de negocio. |
+| **API Gateway** | Punto de entrada único: routing, JWT, **rate limiting (429 con `Retry-After`)**, correlation ID, CORS, errores uniformes. Sin lógica de negocio. |
 | **Eureka** | Service Discovery: los servicios se registran al iniciar y el **Gateway consulta** la ubicación de la instancia activa antes de enrutar. Health checks. |
 | **Config Server** | Configuración centralizada no sensible; perfiles por ambiente. |
 | **Kafka** | Eventos de dominio, desacople, read models. Replay para auditoría y Reporting. |

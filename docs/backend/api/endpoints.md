@@ -105,7 +105,15 @@ GET /api/reports/courses/{courseId}
 | 404 | Recurso inexistente |
 | 409 | Conflicto / regla de negocio |
 | 422 | Validación semántica |
+| **429** | **Demasiadas solicitudes** (rate limiting en Gateway) — con header `Retry-After` |
 | 500 | Error inesperado |
 | 503 | Dependencia no disponible |
+
+## Rate limiting y 429
+
+- Rate limiting en el **Gateway** (Spring Cloud Gateway + Bucket4j o Redis `RequestRateLimiter`) con umbrales por endpoint y rol; foco en `/login`, `/api/auth/*`, `/api/audit`.
+- Respuesta **429** con **`Retry-After`**.
+- **Idempotency Keys** en operaciones críticas (PUT de configuración, baja de ADMIN, activación/archivado): el backend responde el resultado original ante un duplicado.
+- El front aplica **single-flight** (una sola petición en vuelo por clave) + manejo de `Retry-After` (ver [Frontend — Plan de comunicación](/frontend/comunicacion)).
 
 > Nunca se devuelven stack traces, secretos, SQL, prompts internos ni información de otros tenants.

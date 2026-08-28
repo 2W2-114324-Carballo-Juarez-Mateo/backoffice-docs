@@ -77,6 +77,7 @@ export default withMermaid({
         collapsed: false,
         items: [
           { text: 'Portada Frontend', link: '/frontend/' },
+          { text: 'Plan de comunicación', link: '/frontend/comunicacion' },
           { text: 'Casos A/B — postura', link: '/frontend/casos' }
         ]
       },

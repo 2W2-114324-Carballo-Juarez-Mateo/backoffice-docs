@@ -88,6 +88,12 @@ stateDiagram-v2
 - **Resuelve:** §13.
 - **Beneficio:** consistencia entre el cambio de negocio y su evento.
 
+### Idempotency Key — operaciones críticas
+
+- **Dónde:** `*.api.filter` / `*.application.commands` — interceptor que registra `Idempotency-Key` procesadas (PUT de configuración, baja de ADMIN, activación/archivado de curso).
+- **Resuelve:** peticiones duplicadas; complemento del rate limiting (429) y del single-flight del front.
+- **Beneficio:** ante un duplicado, el backend responde el resultado original en vez de re-ejecutar.
+
 ## Tabla resumen
 
 | Patrón | Paquete propuesto | RF | Servicio |
@@ -104,3 +110,4 @@ stateDiagram-v2
 | Adapter | `*.infrastructure.external` | cross-team | Todos |
 | Observer + Outbox | `*.domain.events` · `*.messaging.outbox` | §12/§13 | Todos |
 | Unit of Work | servicio `@Transactional` | §13 | Todos |
+| Idempotency Key | `*.api.filter` · `*.application.commands` | §9.1 / 429 | Todos (críticas) |

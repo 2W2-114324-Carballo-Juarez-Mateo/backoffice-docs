@@ -9,6 +9,7 @@ El frontend está **por definir**: los docentes no dieron una consigna clara aú
 | Página | Qué contiene |
 |---|---|
 | [Casos A/B — postura del grupo](/frontend/casos) | Caso A (apps Angular SSR + Nginx) vs Caso B (Shell + librerías), postura, temas de investigación (BFF, sesión, UI compartida, marketplace de plugins) |
+| [Plan de comunicación](/frontend/comunicacion) | Decisiones concretas: BFF por experiencia, Custom Events, contrato de sesión, `@tup/ui`, Nginx, single-flight/429 y marketplace |
 
 ## Estado
 
