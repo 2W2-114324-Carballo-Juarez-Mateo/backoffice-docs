@@ -63,8 +63,8 @@ course-service/
     │   │   └── infrastructure/
     │   │       ├── persistence/                ← JPA repositories, entities
     │   │       ├── messaging/
-    │   │       │   ├── outbox/                 ← Transactional Outbox
-    │   │       │   └── rabbitmq/
+│   │   │   ├── outbox/                 ← Transactional Outbox
+    │   │   │   └── kafka/                  ← producers, consumers, topics
     │   │       └── external/                   ← clientes REST a otros servicios
     │   └── resources/
     │       ├── application.yml
@@ -80,12 +80,12 @@ course-service/
 | **api** | HTTP, binding, autorización, status codes, DTOs | Reglas complejas de negocio |
 | **application** | Casos de uso, orquestación, validaciones, ports | Lógica de persistencia |
 | **domain** | Reglas de negocio, entidades, value objects, eventos, invariantes | Dependencias externas |
-| **infrastructure** | PostgreSQL/JPA, Flyway, RabbitMQ, Outbox, clientes externos | Reglas de negocio |
+| **infrastructure** | PostgreSQL/JPA, Flyway, Kafka, Outbox, clientes externos | Reglas de negocio |
 
 ## Docker Compose (local)
 
 ```text
 discovery-server (Eureka) · config-server · gateway
 identity-service · course-service · configuration-service · audit-service · reporting-service
-PostgreSQL (una base por servicio) · RabbitMQ
+PostgreSQL (una base por servicio) · Kafka (KRaft)
 ```

@@ -54,7 +54,7 @@
 | Gateway | Spring Cloud Gateway |
 | Discovery | Eureka |
 | Config | Spring Cloud Config Server |
-| Mensajería | RabbitMQ + Outbox |
+| Mensajería | Apache Kafka + Outbox (RabbitMQ = alternativa) |
 | Persistencia | JPA/Hibernate · PostgreSQL (recomendada) |
 | API docs | springdoc / OpenAPI 3 |
 | Seguridad | Spring Security + JWT (jjwt) + 2FA (TOTP) |

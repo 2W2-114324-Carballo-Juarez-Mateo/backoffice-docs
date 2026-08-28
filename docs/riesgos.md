@@ -3,7 +3,7 @@
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
 | Complejidad de microservicios | Alto | Pocos servicios y dominios claros |
-| Fallos de RabbitMQ | Medio | Outbox + retry |
+| Fallos de Kafka (broker caído) | Medio | Outbox + retry + broker resiliente |
 | Eventos duplicados | Medio | Idempotencia (event_id) |
 | Inconsistencia eventual | Medio | Definir qué operaciones requieren respuesta síncrona |
 | Pérdida de trazabilidad | Alto | Correlation ID |

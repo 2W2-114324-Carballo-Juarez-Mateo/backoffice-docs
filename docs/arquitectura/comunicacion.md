@@ -43,22 +43,34 @@ sequenceDiagram
     GW-->>B: respuesta
 ```
 
-## Asíncrona — Eventos RabbitMQ
+## Asíncrona — Eventos Apache Kafka
 
-Para procesos desacoplados: auditoría, read models, notificaciones, propagación de cambios.
+Para procesos desacoplados: auditoría, read models, notificaciones, propagación de cambios. **Kafka** es el broker elegido (ADR-003); RabbitMQ queda como alternativa.
 
 ```mermaid
 sequenceDiagram
     participant CS as Course Service
-    participant RQ as RabbitMQ
-    participant AU as Audit Service
-    participant RP as Reporting Service
+    participant K as Kafka (topic: course.events)
+    participant AU as Audit Service (consumer group: audit)
+    participant RP as Reporting Service (consumer group: reporting)
 
     CS->>CS: persistir + escribir Outbox (misma transacción)
-    CS->>RQ: CourseArchived
-    RQ->>AU: registrar auditoría
-    RQ->>RP: actualizar read model
+    CS->>K: CourseArchived (partición por courseId)
+    K->>AU: registrar auditoría
+    K->>RP: actualizar read model
 ```
+
+### Topics y particionado
+
+| Topic | Eventos | Particionado |
+|---|---|---|
+| `identity.events` | UserCreated, UserRoleChanged, AdminDeleted, AdminRecoveryExecuted | por `actorId` |
+| `course.events` | CourseCreated/Activated/Archived, RosterUpdated | **por `courseId`** (orden por tenant) |
+| `configuration.events` | GlobalConfigurationChanged | por `key` |
+| `audit.events` | eventos de auditoría | por `actorId` |
+| `retention.events` | RetentionDecisionCreated, DataAnonymized | por `courseId` |
+
+Cada **consumer group** (un servicio) lee con su offset propio. Kafka permite **replay**: reconstruir read models de Reporting o la auditoría desde cero (clave para RF-AUD-04).
 
 ## Patrón Outbox
 
@@ -71,7 +83,7 @@ BEGIN TRANSACTION
 COMMIT
         │
         ▼
-   Publisher → RabbitMQ
+   Publisher → Kafka (topic course.events)
 ```
 
 ## Idempotencia en consumidores
@@ -116,16 +128,16 @@ sequenceDiagram
     participant P as Profesor
     participant GW as Gateway
     participant CS as Course Service
-    participant RQ as RabbitMQ
+    participant K as Kafka
     participant AU as Audit
     participant RP as Reporting
 
     P->>GW: POST /api/courses
     GW->>CS: valida JWT y rol
     CS->>CS: valida datos + crea Course + Outbox
-    CS->>RQ: CourseCreated
-    RQ->>AU: auditoría
-    RQ->>RP: read model
+    CS->>K: CourseCreated
+    K->>AU: auditoría
+    K->>RP: read model
     CS-->>P: 201 Created
 ```
 
@@ -144,7 +156,7 @@ flowchart TD
     E -- Sí --> F{¿quedará al menos un ADMIN?}
     F -- No --> X
     F -- Sí --> G[Baja lógica + Outbox]
-    G --> H[RabbitMQ → Audit Service]
+    G --> H[Kafka → Audit Service]
 ```
 
 > La protección del último ADMIN debe manejarse con **transacción y revalidación** (concurrencia), no solo con validación previa.

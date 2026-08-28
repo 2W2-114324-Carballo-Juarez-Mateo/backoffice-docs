@@ -12,10 +12,11 @@
 **Motivo:** evitar acoplamiento mediante base compartida.
 **Consecuencia:** no hay transacciones distribuidas simples; se usa API/eventos.
 
-## ADR-003 — RabbitMQ
+## ADR-003 — Apache Kafka (broker de eventos)
 
-**Decisión:** RabbitMQ para eventos.
-**Motivo:** desacoplar operaciones y permitir procesamiento asíncrono.
+**Decisión:** **Apache Kafka** como broker de eventos (decisión inicial; RabbitMQ queda como alternativa).
+
+**Motivo:** comunicación asíncrona, desacoplamiento, **replay** (read models de Reporting + auditoría inmutable RF-AUD-04), **orden por partición** (`courseId`/tenant) y escalabilidad. Patrones de confiabilidad: Outbox + at-least-once + idempotencia.
 
 ## ADR-004 — Outbox
 
@@ -49,3 +50,8 @@
 **Decisión:** PostgreSQL como motor (una base por servicio).
 **Motivo:** open source, mejor par con Hibernate, JSONB para auditoría/eventos, Docker liviano, transacciones sólidas.
 **Estado:** recomendada, **pendiente de confirmación final** (SQL Server también es viable con Spring).
+
+## Opcionales según tiempo (no bloquean el MVP)
+
+- **Spring Cloud Contract / Pact** (contract testing de eventos): cubierto por OpenAPI + esquemas de eventos versionados + tests de integración en el MVP; se incorpora si sobra tiempo.
+- **Dashboards Prometheus/Grafana + OpenTelemetry**: el MVP exige solo health checks + logs estructurados; la instrumentación queda preparada (`/actuator/metrics`).

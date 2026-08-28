@@ -34,6 +34,7 @@ export default withMermaid({
           { text: 'Vista general', link: '/arquitectura/vista-general' },
           { text: 'Microservicios', link: '/arquitectura/microservicios' },
           { text: 'Comunicación', link: '/arquitectura/comunicacion' },
+          { text: 'Patrones de diseño', link: '/arquitectura/patrones' },
           { text: 'Estructura de carpetas', link: '/arquitectura/carpetas' }
         ]
       },
@@ -65,6 +66,7 @@ export default withMermaid({
           { text: 'Vista general', link: '/arquitectura/vista-general' },
           { text: 'Microservicios', link: '/arquitectura/microservicios' },
           { text: 'Comunicación', link: '/arquitectura/comunicacion' },
+          { text: 'Patrones de diseño', link: '/arquitectura/patrones' },
           { text: 'Estructura de carpetas', link: '/arquitectura/carpetas' }
         ]
       },

@@ -60,6 +60,30 @@ GET /api/reports/courses/{courseId}
 | `PUT /api/configuration/global/PAR-01` | `ROLE_ADMIN` |
 | `GET /api/courses/{id}/roster` | `ROLE_PROFESOR` **y** dueño del curso (alcance) |
 
+## Matriz endpoint → rol → alcance
+
+| Endpoint | Método | Roles | Regla de alcance |
+|---|---|---|---|
+| `/api/auth/login` | POST | público | — |
+| `/api/auth/2fa/verify` | POST | todos | — |
+| `/api/users` | GET | ADMIN | global |
+| `/api/users/admin` | POST | ADMIN | contraseña + 2FA del solicitante (RF-ROL-03/06) |
+| `/api/users/admin/{id}` | DELETE | ADMIN | no auto-eliminación + 2FA + confirmación + último ADMIN |
+| `/api/courses` | GET | ADMIN, PROFESOR | ADMIN: todos; PROFESOR: solo los suyos |
+| `/api/courses` | POST | ADMIN, PROFESOR | PROFESOR crea curso propio |
+| `/api/courses/{id}` | GET/PUT | ADMIN, PROFESOR | PROFESOR: solo si es dueño |
+| `/api/courses/{id}/activate` | POST | ADMIN, PROFESOR | padrón + calibración IA (RF-CUR-08b); sin override |
+| `/api/courses/{id}/archive` | POST | ADMIN, PROFESOR | cierre académico + cero scores IA (RF-CUR-07) |
+| `/api/courses/{id}/roster` | GET/POST | PROFESOR, ADMIN | PROFESOR: solo su curso |
+| `/api/courses/{id}/roster/import` | POST | PROFESOR, ADMIN | carga masiva (RF-USR-05d) |
+| `/api/configuration/global` | GET | ADMIN, PROFESOR | PROFESOR: solo lectura |
+| `/api/configuration/global/{key}` | PUT | ADMIN | exclusivo ADMIN (RF-CFG-05) |
+| `/api/audit` | GET | ADMIN | global |
+| `/api/reports/platform` | GET | ADMIN | global |
+| `/api/reports/courses/{courseId}` | GET | ADMIN, PROFESOR | PROFESOR: solo su curso |
+
+> La autorización se valida **siempre** en el microservicio propietario (RNF-03), aunque el Gateway ya validó el JWT. El alcance se resuelve contra rol + membership/ownership del recurso.
+
 ## Manejo de errores (formato uniforme)
 
 ```json

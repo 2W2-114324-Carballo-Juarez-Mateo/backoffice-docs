@@ -25,7 +25,7 @@ features:
     details: JWT + 2FA, autorización en Gateway y en cada servicio, protección del último ADMIN.
   - icon: 📡
     title: REST + eventos
-    details: Comunicación síncrona para consultas y eventos RabbitMQ con Outbox e idempotencia para el resto.
+    details: Comunicación síncrona para consultas y eventos Apache Kafka con Outbox e idempotencia para el resto.
   - icon: 🧭
     title: Frontend por definir
     details: Caso A (apps Angular SSR + Nginx) como postura del grupo. Ver sección Frontend.

@@ -31,9 +31,9 @@ flowchart TB
 
     E[Eureka · Discovery] -.-> GW
     CFG[Config Server] -.-> GW
-    RQ[RabbitMQ] <--> ID
-    RQ <--> CS
-    RQ <--> CF
+    K[Kafka · Event Broker] <--> ID
+    K <--> CS
+    K <--> CF
 ```
 
 **Principios:** Database per Service · REST + eventos · Outbox · Idempotencia · Autorización en Gateway y en cada servicio · Correlation ID · **Service Discovery con Eureka** (los servicios se registran al iniciar y el Gateway consulta la ubicación de la instancia activa).
@@ -57,7 +57,7 @@ flowchart TB
 | Gateway | Spring Cloud Gateway |
 | Discovery | Eureka (Consul = alternativa) |
 | Config | Spring Cloud Config Server |
-| Mensajería | RabbitMQ + Outbox |
+| Mensajería | Apache Kafka + Outbox (RabbitMQ = alternativa) |
 | Persistencia | JPA/Hibernate · PostgreSQL (recomendada) |
 | API docs | springdoc / OpenAPI 3 |
 | Seguridad | Spring Security + JWT + 2FA (TOTP) |

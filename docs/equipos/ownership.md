@@ -37,7 +37,7 @@
 ### 3. Parámetros de economía consumidos por Gamification (RF-CFG-04)
 
 - **Dependencia:** Configuration Service (BackOffice) → Gamification Service.
-- **Mecanismo:** evento `GlobalConfigurationChanged` (payload: `{key, value, version}`).
+- **Mecanismo:** evento `GlobalConfigurationChanged` (payload: `{key, value, version}`) publicado en el topic `configuration.events` de Kafka.
 - **Regla:** los cambios rigen solo hacia adelante (RF-CFG-06).
 
 ### 4. Cierre de curso consume estado académico (RF-RNK-10/13)
