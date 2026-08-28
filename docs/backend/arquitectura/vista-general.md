@@ -50,7 +50,7 @@ flowchart TB
 | **Eureka** | Service Discovery: los servicios se registran al iniciar y el **Gateway consulta** la ubicación de la instancia activa antes de enrutar. Health checks. |
 | **Config Server** | Configuración centralizada no sensible; perfiles por ambiente. |
 | **Kafka** | Eventos de dominio, desacople, read models. Replay para auditoría y Reporting. |
-| **5 microservicios** | Ver página [Microservicios](/arquitectura/microservicios). |
+| **5 microservicios** | Ver página [Microservicios](/backend/arquitectura/microservicios). |
 
 ## Principios clave
 

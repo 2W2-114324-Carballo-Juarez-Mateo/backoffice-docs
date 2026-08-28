@@ -7,7 +7,7 @@ const base = process.env.VITEPRESS_BASE ?? '/'
 export default withMermaid({
   lang: 'es-ES',
   title: 'BackOffice · Docs',
-  description: 'Requerimientos y arquitectura del backend BackOffice — Plataforma Gamificada',
+  description: 'Documentación por materia — Backend · Frontend · MSII — Plataforma Gamificada',
   cleanUrls: true,
   base,
 
@@ -20,83 +20,81 @@ export default withMermaid({
   themeConfig: {
     logo: '/logo.svg',
     nav: [
-      { text: 'Resumen', link: '/resumen' },
+      { text: 'Inicio', link: '/' },
       {
-        text: 'Requerimientos',
+        text: 'Backend',
+        link: '/backend/',
         items: [
-          { text: 'Funcionales (RF)', link: '/requerimientos/funcionales' },
-          { text: 'No funcionales (RNF)', link: '/requerimientos/no-funcionales' }
+          { text: 'Resumen', link: '/backend/resumen' },
+          { text: 'Vista general', link: '/backend/arquitectura/vista-general' },
+          { text: 'Microservicios', link: '/backend/arquitectura/microservicios' },
+          { text: 'Comunicación', link: '/backend/arquitectura/comunicacion' },
+          { text: 'Patrones de diseño', link: '/backend/arquitectura/patrones' },
+          { text: 'Estructura de carpetas', link: '/backend/arquitectura/carpetas' },
+          { text: 'Modelo de datos', link: '/backend/datos/modelo' },
+          { text: 'API', link: '/backend/api/endpoints' },
+          { text: 'ADRs', link: '/backend/decisiones/adr' },
+          { text: 'Riesgos', link: '/backend/riesgos' },
+          { text: 'Ownership entre equipos', link: '/backend/equipos/ownership' }
         ]
       },
-      {
-        text: 'Arquitectura',
-        items: [
-          { text: 'Vista general', link: '/arquitectura/vista-general' },
-          { text: 'Microservicios', link: '/arquitectura/microservicios' },
-          { text: 'Comunicación', link: '/arquitectura/comunicacion' },
-          { text: 'Patrones de diseño', link: '/arquitectura/patrones' },
-          { text: 'Estructura de carpetas', link: '/arquitectura/carpetas' }
-        ]
-      },
-      { text: 'Modelo de datos', link: '/datos/modelo' },
-      { text: 'API', link: '/api/endpoints' },
-      { text: 'ADRs', link: '/decisiones/adr' },
-      { text: 'Riesgos', link: '/riesgos' },
-      { text: 'Frontend', link: '/frontend/casos' }
+      { text: 'Frontend', link: '/frontend/' },
+      { text: 'MSII', link: '/msii/' }
     ],
 
     sidebar: [
       {
-        text: 'Guía',
+        text: 'General',
         items: [
-          { text: 'Inicio', link: '/' },
-          { text: 'Resumen visual', link: '/resumen' }
+          { text: 'Inicio', link: '/' }
         ]
       },
       {
-        text: 'Requerimientos',
+        text: 'Backend',
+        collapsed: false,
         items: [
-          { text: 'Funcionales (RF)', link: '/requerimientos/funcionales' },
-          { text: 'No funcionales (RNF)', link: '/requerimientos/no-funcionales' }
+          { text: 'Portada Backend', link: '/backend/' },
+          { text: 'Resumen visual', link: '/backend/resumen' },
+          {
+            text: 'Arquitectura',
+            items: [
+              { text: 'Vista general', link: '/backend/arquitectura/vista-general' },
+              { text: 'Microservicios', link: '/backend/arquitectura/microservicios' },
+              { text: 'Comunicación', link: '/backend/arquitectura/comunicacion' },
+              { text: 'Patrones de diseño', link: '/backend/arquitectura/patrones' },
+              { text: 'Estructura de carpetas', link: '/backend/arquitectura/carpetas' }
+            ]
+          },
+          { text: 'Modelo de datos', link: '/backend/datos/modelo' },
+          { text: 'Endpoints', link: '/backend/api/endpoints' },
+          { text: 'ADRs', link: '/backend/decisiones/adr' },
+          { text: 'Riesgos', link: '/backend/riesgos' },
+          { text: 'Ownership entre equipos', link: '/backend/equipos/ownership' }
         ]
       },
       {
-        text: 'Arquitectura',
+        text: 'Frontend',
+        collapsed: false,
         items: [
-          { text: 'Vista general', link: '/arquitectura/vista-general' },
-          { text: 'Microservicios', link: '/arquitectura/microservicios' },
-          { text: 'Comunicación', link: '/arquitectura/comunicacion' },
-          { text: 'Patrones de diseño', link: '/arquitectura/patrones' },
-          { text: 'Estructura de carpetas', link: '/arquitectura/carpetas' }
+          { text: 'Portada Frontend', link: '/frontend/' },
+          { text: 'Casos A/B — postura', link: '/frontend/casos' }
         ]
       },
       {
-        text: 'Datos y API',
+        text: 'MSII (Análisis)',
+        collapsed: false,
         items: [
-          { text: 'Modelo de datos', link: '/datos/modelo' },
-          { text: 'Endpoints', link: '/api/endpoints' }
-        ]
-      },
-      {
-        text: 'Decisiones',
-        items: [
-          { text: 'ADRs', link: '/decisiones/adr' },
-          { text: 'Riesgos', link: '/riesgos' },
-          { text: 'Trazabilidad RF → servicio', link: '/trazabilidad' }
-        ]
-      },
-      {
-        text: 'Coordinación',
-        items: [
-          { text: 'Ownership entre equipos', link: '/equipos/ownership' },
-          { text: 'Frontend — Casos A/B', link: '/frontend/casos' }
+          { text: 'Portada MSII', link: '/msii/' },
+          { text: 'Requerimientos funcionales', link: '/msii/requerimientos-funcionales' },
+          { text: 'Requerimientos no funcionales', link: '/msii/requerimientos-no-funcionales' },
+          { text: 'Trazabilidad RF → servicio', link: '/msii/trazabilidad' }
         ]
       }
     ],
 
     footer: {
-      message: 'Plataforma de Aprendizaje Gamificado · BackOffice · 4to Cuatrimestre',
-      copyright: 'Trabajo Integrador — UTN'
+      message: 'Plataforma de Aprendizaje Gamificado · Backend · Frontend · MSII',
+      copyright: 'Trabajo Integrador — 4to Cuatrimestre'
     }
   }
 })

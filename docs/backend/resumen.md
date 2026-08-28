@@ -52,7 +52,7 @@ flowchart TB
 
 | Capa | Tecnología |
 |---|---|
-| Lenguaje / Framework | Java 17 · Spring Boot 3 |
+| Lenguaje / Framework | Java 21 · Spring Boot 3 |
 | Build | Maven (multi-módulo) |
 | Gateway | Spring Cloud Gateway |
 | Discovery | Eureka (Consul = alternativa) |

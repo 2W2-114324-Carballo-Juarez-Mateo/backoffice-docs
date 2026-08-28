@@ -35,7 +35,7 @@
 
 ## ADR-007 — Stack Java + Spring
 
-**Decisión:** Java 17 + Spring Boot 3 + Maven.
+**Decisión:** Java 21 + Spring Boot 3 + Maven.
 **Motivo:** experiencia previa del equipo con Java/Spring; ecosistema Spring Cloud completo.
 **Consecuencia:** se reemplaza cualquier propuesta previa basada en .NET (YARP, EF Core) por Spring Cloud Gateway, JPA/Hibernate y PostgreSQL.
 
