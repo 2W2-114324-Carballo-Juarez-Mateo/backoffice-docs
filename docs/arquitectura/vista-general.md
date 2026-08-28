@@ -34,12 +34,12 @@ flowchart TB
     CS --> RQ
     CF --> RQ
     RP --> RQ
-    EU -. registra .- GW
-    EU -. registra .- ID
-    EU -. registra .- CS
-    EU -. registra .- CF
-    EU -. registra .- AU
-    EU -. registra .- RP
+    EU <-->|consulta ubicación de instancias| GW
+    EU <-. registra .- ID
+    EU <-. registra .- CS
+    EU <-. registra .- CF
+    EU <-. registra .- AU
+    EU <-. registra .- RP
 ```
 
 ## Componentes
@@ -47,7 +47,7 @@ flowchart TB
 | Componente | Rol |
 |---|---|
 | **API Gateway** | Punto de entrada único: routing, JWT, rate limiting, correlation ID, CORS, errores uniformes. Sin lógica de negocio. |
-| **Eureka** | Service Discovery + health checks + registro de instancias. |
+| **Eureka** | Service Discovery: los servicios se registran al iniciar y el **Gateway consulta** la ubicación de la instancia activa antes de enrutar. Health checks. |
 | **Config Server** | Configuración centralizada no sensible; perfiles por ambiente. |
 | **RabbitMQ** | Eventos de dominio, desacople, read models. |
 | **5 microservicios** | Ver página [Microservicios](/arquitectura/microservicios). |

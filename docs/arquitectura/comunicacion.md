@@ -1,6 +1,28 @@
 # Comunicación entre microservicios
 
-Dos mecanismos complementarios:
+Tres piezas complementarias: **Service Discovery**, comunicación síncrona y asíncrona.
+
+## Service Discovery — Eureka
+
+Cada microservicio se **registra en Eureka al iniciar** (nombre, IP, puerto, health). El **API Gateway no conoce direcciones fijas**: consulta a Eureka la ubicación de la instancia activa antes de enrutar. Así, una instancia nueva se suma sola y una caída se descarta automáticamente.
+
+```mermaid
+sequenceDiagram
+    participant FE as Frontend / BFF
+    participant GW as API Gateway
+    participant EU as Eureka (Discovery)
+    participant CS as Course Service
+
+    CS->>EU: registra instancia (health OK)
+    FE->>GW: GET /api/courses
+    GW->>EU: ¿dónde está course-service?
+    EU-->>GW: instancia activa (curso-1:8082)
+    GW->>CS: enruta la petición
+    CS-->>GW: 200 datos
+    GW-->>FE: respuesta
+```
+
+> El **Config Server** complementa: los servicios toman su configuración no sensible (URLs internas, feature flags, perfiles) desde el Config Server al arrancar, y los secretos desde variables de entorno.
 
 ## Síncrona — HTTP/REST
 

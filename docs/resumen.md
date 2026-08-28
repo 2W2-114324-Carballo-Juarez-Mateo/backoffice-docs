@@ -36,7 +36,7 @@ flowchart TB
     RQ <--> CF
 ```
 
-**Principios:** Database per Service · REST + eventos · Outbox · Idempotencia · Autorización en Gateway y en cada servicio · Correlation ID.
+**Principios:** Database per Service · REST + eventos · Outbox · Idempotencia · Autorización en Gateway y en cada servicio · Correlation ID · **Service Discovery con Eureka** (los servicios se registran al iniciar y el Gateway consulta la ubicación de la instancia activa).
 
 ## Los 5 microservicios
 
