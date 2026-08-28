@@ -60,6 +60,31 @@ Design tokens (variables CSS) + componentes; semver (breaking → major); consum
 
 TLS, SSR + assets, headers de seguridad (CSP/HSTS), compresión/cache, **degradación controlada** si una app cae.
 
+## Recarga de página y deep-links (evitar corromper el SPA)
+
+Al recargar una ruta client-side (ej. `/backoffice/cursos/10`), Nginx debe servir la entrada **de esa app**; si el fallback está mal, sirve el index de otra app o 404 → SPA "corrompido".
+
+**1. Fallback por prefijo:**
+
+```nginx
+location /backoffice/ {
+    proxy_pass http://backoffice-ssr:4000;      # SSR
+}
+location /backoffice/ {                          # respaldo estático
+    try_files $uri $uri/ /backoffice/index.html;
+}
+```
+
+> Regla de oro: el fallback apunta al index **de esa app**, nunca al de otra.
+
+**2. Cache headers:** `index.html` → `no-cache`; assets con hash → `immutable` + cache largo (evita "chunks rotos" al recargar con una pestaña vieja).
+
+**3. SSR consistente:** datos iniciales vienen del BFF (misma fuente server/client) → sin *hydration mismatch*.
+
+**4. Chunk load error → hard reload** para forzar el index nuevo.
+
+**5. Estado tras recarga:** se pierde el estado en memoria (NgRx) — esperado; el servidor es la fuente de verdad y la app re-bootstrapa vía BFF.
+
 ## Peticiones duplicadas y manejo de 429
 
 ### Frontend — patrón single-flight (request dedup)
