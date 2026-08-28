@@ -34,15 +34,15 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
     <transition name="sdd-fade">
       <div v-if="open" class="sdd-menu" role="menu">
         <div class="sdd-menu-title">Software Design Documents</div>
-        <a class="sdd-item disabled" role="menuitem" aria-disabled="true">
+        <a class="sdd-item" role="menuitem" href="/sdd/sdd-frontend.zip" download>
           <span>SDD — Frontend</span>
-          <span class="sdd-tag">Próximamente</span>
+          <span class="sdd-tag">.zip</span>
         </a>
-        <a class="sdd-item disabled" role="menuitem" aria-disabled="true">
+        <a class="sdd-item" role="menuitem" href="/sdd/sdd-backend.zip" download>
           <span>SDD — Backend</span>
-          <span class="sdd-tag">Próximamente</span>
+          <span class="sdd-tag">.zip</span>
         </a>
-        <div class="sdd-menu-note">Los SDD se generan como PDF cuando los planes estén estables.</div>
+        <div class="sdd-menu-note">Cada archivo contiene la carpeta completa + AGENTS.md. Se regenera al cambiar los planes.</div>
       </div>
     </transition>
   </div>
