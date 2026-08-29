@@ -20,11 +20,11 @@
 
 ```text
 Incorrecto:  Identity ──┐
-             Course ────┼──► PostgreSQL compartido
+             Admin ─────┼──► PostgreSQL compartido
              Audit ─────┘
 
 Correcto:    Identity ──► identity_db
-             Course ────► course_db
+             Admin ─────► administration_db
              Audit ─────► audit_db
 ```
 
@@ -34,7 +34,7 @@ Correcto:    Identity ──► identity_db
 // Incorrecto: consulta directa a datos de otro dominio
 courseRepository.findByUserEmail(...);
 
-// Correcto: Course Service → Identity API, o evento/read model
+// Correcto: Administration Service → Identity & Access API, o evento/read model
 ```
 
 **No poner reglas de negocio en controllers:** `Controller → Application → Domain → Infrastructure`.

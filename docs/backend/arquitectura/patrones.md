@@ -4,56 +4,36 @@
 
 ## Domain
 
-### State — Ciclo de vida de Course
-
-- **Dónde:** `course.domain.state` — `CourseState` (interface) + `DraftState`, `ActiveState`, `ArchivedState`.
-- **Resuelve:** RF-CUR-04/06/07.
-- **Beneficio:** las guardas de transición (activar exige padrón + calibración IA; archivar exige cierre académico + cero scores) viven en el dominio, no en controllers.
-
-```mermaid
-stateDiagram-v2
-    [*] --> DRAFT
-    DRAFT --> ACTIVE: padrón + calibración IA (sin override)
-    ACTIVE --> ARCHIVED: cierre académico + 0 scores pendientes
-    ARCHIVED --> [*]
-```
-
 ### Specification — Reglas compuestas
 
-- **Dónde:** `course.domain.specifications` (`CanActivateCourseSpec`, `CanArchiveCourseSpec`), `identity.domain.specifications` (`AtLeastOneActiveAdminSpec`).
-- **Resuelve:** RF-CUR-08b, RF-IA-36, RF-ROL-05.
+- **Dónde:** `identity.domain.specifications` (`AtLeastOneActiveAdminSpec`), `administration.domain.specifications` (reglas de cambio de parámetro/proveedor).
+- **Resuelve:** RF-ROL-05, RF-CFG-06, RF-IA-35.
 - **Beneficio:** reglas combinables (AND/OR), testeables aisladamente y reutilizables entre servicios.
 
 ### Strategy — Políticas intercambiables
 
-- **Dónde:** `course.domain.rewards` (`RewardStrategy` + `Basic/Medium/AdvancedRewardStrategy`), `configuration.domain.retention` (`RetentionDecisionStrategy`: extender vs anonimizar).
-- **Resuelve:** RF-DES-07, RF-CFG-04, RF-RET-03.
+- **Dónde:** `administration.domain.retention` (`RetentionDecisionStrategy`: extender vs anonimizar).
+- **Resuelve:** RF-RET-03.
 - **Beneficio:** el caso de uso no cambia cuando se ajusta una política.
 
 ### Null Object — Dependencia externa no disponible
 
-- **Dónde:** `course.infrastructure.external` (`CalibrationClient` + `NoOpCalibrationClient`).
-- **Resuelve:** RF-IA-27 (la caída de una dependencia nunca bloquea la operación).
+- **Dónde:** `administration.infrastructure.external` (`ProviderRegistryClient` + `NoOpProviderClient`).
+- **Resuelve:** RNF-06 (resiliencia).
 - **Beneficio:** comportamiento neutro explícito, sin `if (client == null)`.
-
-### Prototype — Curso desde template
-
-- **Dónde:** `course.domain` — `CourseTemplate.clone()`.
-- **Resuelve:** RF-CUR-02.
-- **Beneficio:** clona la estructura del roadmap sin acoplar template y curso.
 
 ## Application
 
 ### Command — Casos de uso como objetos
 
-- **Dónde:** `*.application.commands` (`CreateCourseCommand`, `ActivateCourseCommand`, `ArchiveCourseCommand` + handlers).
+- **Dónde:** `*.application.commands` (`UpdateParameterCommand`, `RegisterModelProviderCommand`, `AssignModelToFunctionCommand`, `DeleteAdminCommand`).
 - **Resuelve:** estructura de capas; CQRS ligero.
 - **Beneficio:** aísla HTTP del dominio; cada comando es testeable y auditable.
 
 ### Chain of Responsibility — Pipeline de validación
 
-- **Dónde:** `identity.application.validation` (`AdminDeletionValidator`: auto-eliminación → 2FA → confirmación escrita → último ADMIN), alcance por recurso en `course.api.security`.
-- **Resuelve:** RF-ROL-06, RF-USR-06.
+- **Dónde:** `identity.application.validation` (`AdminDeletionValidator`: auto-eliminación → 2FA → confirmación → último ADMIN); alcance por curso en `reporting.api.security`.
+- **Resuelve:** RF-ROL-06, RF-RPT-04.
 - **Beneficio:** cada validador es independiente y falla con su propio error.
 
 ### Decorator — Auditoría transversal
@@ -62,17 +42,11 @@ stateDiagram-v2
 - **Resuelve:** RF-AUD-01/03.
 - **Beneficio:** la auditoría se compone sobre el comando sin ensuciar el caso de uso.
 
-### Template Method — Import de padrón
-
-- **Dónde:** `course.application.roster` (`RosterImportTemplate`: validar → normalizar → acumular → reportar).
-- **Resuelve:** RF-USR-05d.
-- **Beneficio:** reutiliza el flujo de carga masiva; solo varía el parseo.
-
 ## Infrastructure
 
 ### Adapter — Clientes a servicios externos
 
-- **Dónde:** `course.infrastructure.external` (`IdentityClient`, `CalibrationClient`, `RankingClient`).
+- **Dónde:** `*.infrastructure.external` (`IdentityClient`, `AIProviderClient`, `CourseClient`).
 - **Resuelve:** contratos cross-team.
 - **Beneficio:** aísla red y DTOs; testeo con mocks.
 
@@ -90,24 +64,21 @@ stateDiagram-v2
 
 ### Idempotency Key — operaciones críticas
 
-- **Dónde:** `*.api.filter` / `*.application.commands` — interceptor que registra `Idempotency-Key` procesadas (PUT de configuración, baja de ADMIN, activación/archivado de curso).
-- **Resuelve:** peticiones duplicadas; complemento del rate limiting (429) y del single-flight del front.
-- **Beneficio:** ante un duplicado, el backend responde el resultado original en vez de re-ejecutar.
+- **Dónde:** `*.api.filter` / `*.application.commands` — PUT de configuración, proveedores, baja de ADMIN.
+- **Resuelve:** duplicados + 429.
+- **Beneficio:** ante un duplicado, el backend responde el resultado original.
 
 ## Tabla resumen
 
 | Patrón | Paquete propuesto | RF | Servicio |
 |---|---|---|---|
-| State | `course.domain.state` | RF-CUR-04/06/07 | Course |
-| Specification | `course.domain.specifications` · `identity.domain.specifications` | RF-CUR-08b · RF-ROL-05 | Course / Identity |
-| Strategy | `course.domain.rewards` · `configuration.domain.retention` | RF-DES-07 · RF-RET-03 | Course / Configuration |
-| Null Object | `course.infrastructure.external` | RF-IA-27 | Course |
-| Prototype | `course.domain` | RF-CUR-02 | Course |
+| Specification | `identity.domain.specifications` · `administration.domain.specifications` | RF-ROL-05 · RF-CFG-06 | Identity / Administration |
+| Strategy | `administration.domain.retention` | RF-RET-03 | Administration |
+| Null Object | `administration.infrastructure.external` | RNF-06 | Administration |
 | Command | `*.application.commands` | capas | Todos |
-| Chain of Responsibility | `identity.application.validation` | RF-ROL-06 | Identity |
+| Chain of Responsibility | `identity.application.validation` | RF-ROL-06 · RF-RPT-04 | Identity / Reporting |
 | Decorator | `audit.application` | RF-AUD-01/03 | Audit |
-| Template Method | `course.application.roster` | RF-USR-05d | Course |
 | Adapter | `*.infrastructure.external` | cross-team | Todos |
 | Observer + Outbox | `*.domain.events` · `*.messaging.outbox` | §12/§13 | Todos |
-| Unit of Work | servicio `@Transactional` | §13 | Todos |
-| Idempotency Key | `*.api.filter` · `*.application.commands` | §9.1 / 429 | Todos (críticas) |
+| Unit of Work | `@Transactional` | §13 | Todos |
+| Idempotency Key | `*.api.filter` | 429/duplicados | Todos (críticas) |

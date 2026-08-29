@@ -1,52 +1,43 @@
 # Ownership entre equipos
 
-> La clase se dividió por módulos (microservicios). Cada módulo tiene un **dueño**. Este sitio cubre el **BackOffice**, pero varios dominios son tocados por equipos vecinos: definir fronteras evita que dos equipos implementen lo mismo.
+> La clase se dividió por módulos (microservicios). Cada módulo tiene un **dueño**. El BackOffice cubre **4 servicios**; el resto de los dominios son de otros equipos y el BackOffice solo los **consume** (eventos/APIs) para reportes y métricas.
 
-## Matriz de ownership (borrador para coordinar)
+## Matriz de ownership
 
-| Servicio / Dominio | Dueño | Alcance BackOffice |
+| Servicio / Dominio | Dueño | Rol del BackOffice |
 |---|---|---|
-| Identity & Auth (login, 2FA, roles, ADMIN) | **BackOffice** | Propietario completo |
-| User (datos, legajo, avatar) | a definir | BackOffice consulta/administra según PRD |
-| Course (cursos, roadmap, padrón, estados) | a definir | BackOffice administra curso + padrón + transiciones |
-| Challenge (desafíos) | a definir | BackOffice crea/consulta desafíos del dominio |
-| Configuration (PAR-01..18) | **BackOffice** | Propietario completo |
-| Audit | **BackOffice** | Propietario completo |
-| Reporting / Analytics | **BackOffice** | Propietario (read models) |
-| Gamification (XP, monedas, vidas) | equipo Gamificación | BackOffice **no implementa**, solo configura PAR |
-| Ranking / Cierre académico | equipo Ranking | BackOffice consume al archivar |
-| AI Service | equipo IA | BackOffice **no implementa**; consume calibración |
-| Communication (chat) | equipo Comunicación | BackOffice no implementa; reacciona a eventos |
+| Auth, roles, permisos, gestión de ADMIN | **BackOffice** (Identity & Access) | Propietario |
+| Configuración global (PAR-01..18) | **BackOffice** (Administration) | Propietario |
+| Proveedores/modelos de IA (RF-IA-23/24/25/35) | **BackOffice** (Administration) | Propietario (configuración; el AI Service la consume) |
+| Reportes docentes, métricas de curso, exportación | **BackOffice** (Reporting & Analytics) | Propietario |
+| Auditoría | **BackOffice** (Audit) | Propietario |
+| User (datos, legajo, **avatar**, perfil, onboarding) | equipo Usuarios | **No** — solo consumo/consulta administrativa |
+| Course (cursos, roadmap, padrón, estados) | equipo Cursos | **No** — consume eventos (CourseArchived, RosterUpdated) para reportes/métricas |
+| Challenge (desafíos) | equipo Desafíos | **No** |
+| Gamification (XP, monedas, vidas) | equipo Gamificación | **No** — solo configura PAR que ellos consumen |
+| Ranking / Cierre académico | equipo Ranking | **No** — consume datos para métricas |
+| AI Service (tutor/evaluador como producto) | equipo IA | **No** — consume la config de proveedores que administramos |
+| Communication (chat) | equipo Comunicación | **No** |
+| Encuestas de alumno | equipo Encuestas | **No** — consume agregados anónimos |
 
-> **Importante:** acordar esta matriz con los demás equipos antes de la defensa.
+> Matriz a acordar con los demás equipos antes de la defensa.
 
 ## Contratos cross-team (dependencias críticas)
 
-### 1. Activación de curso exige calibración de IA (RF-CUR-08b, RF-IA-36)
+### 1. Configuración de proveedores de modelo → AI Service
+- **Dependencia:** Administration (BackOffice) → AI Service (equipo IA).
+- **Mecanismo:** evento `ModelProviderChanged` / `GlobalConfigurationChanged` en el topic `administration.events`.
+- **Regla:** solo ADMIN puede cambiarla (RF-IA-35).
 
-- **Dependencia:** Course Service (BackOffice) → AI Service (equipo IA).
-- **Mecanismo:** consulta síncrona REST al activar.
-- **Regla:** sin calibración aprobada → el curso NO pasa de `draft` a `activo`. No existe override.
+### 2. Parámetros de economía → Gamification (RF-CFG-04)
+- **Mecanismo:** evento `GlobalConfigurationChanged` (`{key, value, version}`).
+- **Regla:** cambios hacia adelante (RF-CFG-06).
 
-### 2. Archivado exige cero scores IA pendientes (RF-IA-34)
+### 3. Reportes/métricas consumen eventos de otros dominios
+- **Mecanismo:** Reporting & Analytics (BackOffice) consume `course.events`, `gamification.events`, `ranking.events`, `survey.events` para read models, sin acceder a sus bases.
+- **Encuestas:** solo agregados anónimos (RF-ENC-04/12).
 
-- **Dependencia:** Course Service → AI Service.
-- **Mecanismo:** consulta síncrona al archivar.
-- **Regla:** con scores pendientes → se bloquea el archivado.
-
-### 3. Parámetros de economía consumidos por Gamification (RF-CFG-04)
-
-- **Dependencia:** Configuration Service (BackOffice) → Gamification Service.
-- **Mecanismo:** evento `GlobalConfigurationChanged` (payload: `{key, value, version}`) publicado en el topic `configuration.events` de Kafka.
-- **Regla:** los cambios rigen solo hacia adelante (RF-CFG-06).
-
-### 4. Cierre de curso consume estado académico (RF-RNK-10/13)
-
-- **Dependencia:** Course Service → Ranking Service.
-- **Mecanismo:** BackOffice emite `CourseArchived`; Ranking reacciona.
-
-### 5. Reporting consume eventos de todos los dominios
-
-- Reporting (BackOffice) consume eventos de Gamification, Challenge, Ranking, Survey para read models, sin acceder a sus bases.
+### 4. Intervención excepcional de ADMIN sobre cursos
+- **Mecanismo:** si el PRD otorga a ADMIN intervención excepcional sobre cursos (RF-CUR-08), se hace por la **API del equipo Cursos** (cross-team), no con servicio propio.
 
 > **Convención de eventos:** todos siguen `{eventId, eventType, occurredAt, correlationId, actorId, source, payload}`, con contrato versionado.

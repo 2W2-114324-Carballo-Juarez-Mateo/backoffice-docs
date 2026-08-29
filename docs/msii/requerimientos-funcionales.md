@@ -1,6 +1,7 @@
 # Requerimientos Funcionales (RF)
 
-> Los IDs preservan los del PRD para trazabilidad (`RF-ÁREA-NN`). Detalle completo en `backoffice_backend_requerimientos_arquitectura.md` §4.
+> **Alcance oficial del BackOffice** (puntos de los docentes): administración de plataforma · gestión del proveedor de modelo (exclusiva de ADMIN) · reportes docentes · panel de métricas de curso · exportación de datos.
+> Los IDs preservan los del PRD para trazabilidad (`RF-ÁREA-NN`); los propios del BackOffice se numeran `RF-IA-ADM-*` y `RF-RPT-*`. Detalle completo en `backoffice_backend_requerimientos_arquitectura.md` §4.
 
 ## Roles y administración de ADMIN
 
@@ -18,10 +19,10 @@
 | ID | Requisito |
 |---|---|
 | RF-CFG-01 | ADMIN administra configuraciones globales. |
-| RF-CFG-02 | Configuración por curso administrada por el PROFESOR creador. |
-| RF-CFG-03 | Configuración a nivel usuario. |
+| RF-CFG-02 | Configuración a nivel curso: dominio del equipo Cursos. |
+| RF-CFG-03 | Configuración a nivel usuario: dominio del equipo Usuarios. |
 | RF-CFG-04 | Parámetros de economía (PAR-01..18) globales, solo ADMIN. |
-| RF-CFG-05 | Separación de ámbitos: ADMIN = valores globales; PROFESOR = decisiones pedagógicas. No puede pisar parámetros globales. |
+| RF-CFG-05 | Separación de ámbitos: ADMIN = valores globales; PROFESOR no puede pisar parámetros globales. |
 | RF-CFG-06 | Cambios de parámetros aplican solo hacia adelante (sin recalcular histórico). |
 
 ### Catálogo de parámetros (resumen)
@@ -41,42 +42,42 @@
 | Retención académica / preaviso | 5 años / 90 días |
 | Umbral encuestas | 5 respuestas |
 
-## Gestión de usuarios
+## Gestión de usuarios (solo lado ADMIN)
 
 | ID | Requisito |
 |---|---|
 | RF-USR-01 | ADMIN consulta usuarios (ámbito global). |
-| RF-USR-02 | Consulta de identidad, rol, estado, validación, fecha de alta. |
-| RF-USR-03 | Operaciones administrativas de usuario según PRD. |
+| RF-USR-02 | Consulta de identidad básica, rol, estado, fecha de alta. |
+| RF-USR-03 | Operaciones administrativas de usuario según PRD (incluida gestión de ADMIN). |
 | RF-USR-04 | Bajas siempre lógicas. |
-| RF-USR-05 | PROFESOR administra padrón de su curso: alta, carga masiva (acumula y reporta errores), modificación, baja lógica. |
-| RF-USR-06 | Backend valida ámbito: el PROFESOR solo accede a alumnos de sus cursos. |
+| RF-USR-05 | El padrón de curso es del equipo Cursos; el BackOffice solo consume `RosterUpdated`. |
+| RF-USR-06 | Backend valida ámbito: ADMIN global; PROFESOR solo sus cursos (en reportes). |
 
-## Gestión de cursos
+> **Fuera de alcance:** onboarding/alta de alumno/profesor, validación de legajo, avatar/imagen de usuario, perfil, vinculación GitHub, Guided Tour → equipo Usuarios.
 
-| ID | Requisito |
-|---|---|
-| RF-CUR-01 | Alta de curso por PROFESOR autorizado. |
-| RF-CUR-02 | ADMIN consulta todos; PROFESOR solo los suyos. |
-| RF-CUR-03 | Edición según reglas de negocio. |
-| RF-CUR-04 | Estados: `draft`, `activo`, `archivado`. |
-| RF-CUR-05 | No hay borrado físico: se archiva. |
-| RF-CUR-06 | draft → activo valida padrón cargado + calibración IA aprobada. Sin override. |
-| RF-CUR-07 | activo → archivado valida estado académico confirmado + cero scores IA pendientes. |
-| RF-CUR-08 | Archivado queda en modo lectura. |
-| RF-CUR-09 | Administra la info del curso sin asumir dominios de otros equipos. |
-
-## Desafíos (administración)
+## Gestión de proveedores de modelo (exclusiva de ADMIN)
 
 | ID | Requisito |
 |---|---|
-| RF-DES-01 | ADMIN/PROFESOR crean desafíos. |
-| RF-DES-02 | Consulta de desafíos para el usuario autenticado. |
-| RF-DES-03 | Modificación según reglas del PRD. |
-| RF-DES-04 | Dificultad: BASICO / MEDIO / AVANZADO. |
-| RF-DES-05 | Atributo `obligatorio`. |
-| RF-DES-06 | Reintentos configurables 0–3. |
-| RF-DES-07 | XP/monedas se derivan de parámetros globales (el profesor no fija montos). |
+| RF-IA-ADM-01 | Alta/sustitución/baja de proveedores y modelos de LLM, potestad exclusiva de ADMIN, auditada (RF-IA-35). |
+| RF-IA-ADM-02 | Asignación modelo ↔ función (tutor/evaluador/moderador/generador/RAG), configuración global (RF-IA-23/24). |
+| RF-IA-ADM-03 | Evaluador de uso de IA: un único modelo activo; se registra `model_id` + `model_version` + `rubric_version` (RF-IA-25). |
+| RF-IA-ADM-04 | Cambio de modelo evaluador en cualquier momento, sujeto a calibración (RF-IA-28). |
+| RF-IA-ADM-05 | Golden set base a nivel plataforma + calibración dentro de tolerancia (PAR-14) para habilitar el evaluador (RF-IA-30/31). |
+| RF-IA-ADM-06 | Detección de deriva: re-calibración periódica y ante cambio de versión; alerta si cae fuera de tolerancia (RF-IA-32). |
+| RF-IA-ADM-07 | Trazabilidad de cohortes evaluadas con más de un modelo (RF-IA-33). |
+
+> El AI Service (otro equipo) **consume** esta configuración; el BackOffice solo la administra.
+
+## Reportes docentes, métricas de curso y exportación
+
+| ID | Requisito |
+|---|---|
+| RF-RPT-01 | Reportes docentes: PROFESOR consulta sus cursos; ADMIN el consolidado de plataforma. |
+| RF-RPT-02 | Panel de métricas de curso: satisfacción (KPIs de encuesta agregados/anónimos), engagement, aprobación/abandono. |
+| RF-RPT-03 | Exportación de datos: resúmenes administrativos y reportes descargables (CSV/PDF). |
+| RF-RPT-04 | No exposición de datos fuera de ámbito (mismas reglas de autorización). |
+| RF-RPT-05 | Encuestas: solo agregados anónimos (RF-ENC-04/12); sin reconstruir autor ↔ respuesta. |
 
 ## Auditoría
 
@@ -84,7 +85,7 @@
 |---|---|
 | RF-AUD-01 | Registro de operaciones administrativas sensibles. |
 | RF-AUD-02 | Datos mínimos: evento, usuario, rol, fecha, operación, recurso, resultado, motivo, correlation ID. |
-| RF-AUD-03 | Obligatorias: alta/baja ADMIN, recuperación, cambios de config global, cambios críticos de curso, retención/anonimización, overrides. |
+| RF-AUD-03 | Obligatorias: alta/baja ADMIN, recuperación, cambios de config global, cambios de proveedores de modelo, retención/anonimización, overrides. |
 | RF-AUD-04 | Inmutabilidad lógica desde las APIs comunes. |
 
 ## Retención y datos
@@ -96,11 +97,6 @@
 | RF-RET-03 | ADMIN decide: extender o anonimizar. |
 | RF-RET-04 | Toda decisión auditada (responsable, fecha, alcance, motivo). |
 
-## Reporting
+## Fuera del alcance del BackOffice (otros equipos)
 
-| ID | Requisito |
-|---|---|
-| RF-REP-01 | Consultas para que ADMIN supervise la plataforma. |
-| RF-REP-02 | PROFESOR consulta info de sus cursos. |
-| RF-REP-03 | El reporting aplica las mismas reglas de autorización. |
-| RF-REP-04 | Encuestas: respeta anonimato 100% (sin reconstruir autor ↔ respuesta). |
+Cursos/Roadmap, Desafíos, Usuarios (onboarding), Gamificación, Ranking, Chat, Notificaciones, Encuestas de alumno, IA como producto (tutor/evaluador). El BackOffice **consume** sus eventos para reportes y métricas.

@@ -14,11 +14,10 @@ backoffice-backend/
 │   └── src/main/java/com/backoffice/gateway/
 │
 ├── services/
-│   ├── identity-service/       ──→ com/backoffice/identity/{api,application,domain,infrastructure}
-│   ├── course-service/         ──→ com/backoffice/course/...
-│   ├── configuration-service/  ──→ com/backoffice/configuration/...
-│   ├── audit-service/          ──→ com/backoffice/audit/...
-│   └── reporting-service/      ──→ com/backoffice/reporting/...
+│   ├── identity-access-service/  ──→ com/backoffice/identity/{api,application,domain,infrastructure}
+│   ├── administration-service/   ──→ com/backoffice/administration/...
+│   ├── reporting-service/        ──→ com/backoffice/reporting/...
+│   └── audit-service/            ──→ com/backoffice/audit/...
 │
 ├── building-blocks/
 │   ├── contracts/              ← DTOs y contratos de eventos compartidos
@@ -37,21 +36,21 @@ backoffice-backend/
 ## Estructura interna de un microservicio (Clean Architecture)
 
 ```text
-course-service/
+administration-service/
 │
 ├── pom.xml
 └── src/
     ├── main/
-    │   ├── java/com/backoffice/course/
-    │   │   ├── CourseApplication.java          ← @SpringBootApplication
+    │   ├── java/com/backoffice/administration/
+    │   │   ├── AdministrationApplication.java  ← @SpringBootApplication
     │   │   ├── api/
-    │   │   │   ├── controllers/                ← CourseController, RosterController, ChallengeController
+    │   │   │   ├── controllers/                ← ParameterController, ModelProviderController, ModelFunctionController
     │   │   │   ├── dto/
     │   │   │   ├── exception/                  ← @RestControllerAdvice
     │   │   │   └── config/                     ← seguridad, validación
     │   │   ├── application/
-    │   │   │   ├── commands/                   ← CreateCourse, UpdateCourse, ActivateCourse, ArchiveCourse
-    │   │   │   ├── queries/                    ← GetCourse, GetCourses
+    │   │   │   ├── commands/                   ← UpdateParameter, RegisterModelProvider, AssignModelToFunction
+    │   │   │   ├── queries/                    ← GetParameter, GetModelProviders
     │   │   │   ├── dto/
     │   │   │   ├── validators/
     │   │   │   └── ports/                      ← interfaces hacia dominio/infra
@@ -63,8 +62,8 @@ course-service/
     │   │   └── infrastructure/
     │   │       ├── persistence/                ← JPA repositories, entities
     │   │       ├── messaging/
-│   │   │   ├── outbox/                 ← Transactional Outbox
-    │   │   │   └── kafka/                  ← producers, consumers, topics
+    │   │       │   ├── outbox/                 ← Transactional Outbox
+    │   │       │   └── kafka/                  ← producers, consumers, topics
     │   │       └── external/                   ← clientes REST a otros servicios
     │   └── resources/
     │       ├── application.yml
@@ -86,6 +85,6 @@ course-service/
 
 ```text
 discovery-server (Eureka) · config-server · gateway
-identity-service · course-service · configuration-service · audit-service · reporting-service
+identity-access-service · administration-service · reporting-service · audit-service
 PostgreSQL (una base por servicio) · Kafka (KRaft)
 ```

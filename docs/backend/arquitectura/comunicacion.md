@@ -11,14 +11,14 @@ sequenceDiagram
     participant FE as Frontend / BFF
     participant GW as API Gateway
     participant EU as Eureka (Discovery)
-    participant CS as Course Service
+    participant AD as Administration Service
 
-    CS->>EU: registra instancia (health OK)
-    FE->>GW: GET /api/courses
-    GW->>EU: ¿dónde está course-service?
-    EU-->>GW: instancia activa (curso-1:8082)
-    GW->>CS: enruta la petición
-    CS-->>GW: 200 datos
+    AD->>EU: registra instancia (health OK)
+    FE->>GW: GET /api/administration/parameters
+    GW->>EU: ¿dónde está administration-service?
+    EU-->>GW: instancia activa (admin-1:8082)
+    GW->>AD: enruta la petición
+    AD-->>GW: 200 datos
     GW-->>FE: respuesta
 ```
 
@@ -32,43 +32,58 @@ Cuando se necesita respuesta inmediata (consultas, validaciones para completar u
 sequenceDiagram
     participant B as BackOffice
     participant GW as API Gateway
-    participant CS as Course Service
-    participant ID as Identity Service
+    participant AD as Administration Service
+    participant ID as Identity & Access
 
-    B->>GW: GET /api/courses/10/students
-    GW->>CS: reenvía con JWT
-    CS->>ID: ¿el usuario tiene alcance sobre el curso 10?
-    ID-->>CS: sí / no
-    CS-->>GW: datos o 403
+    B->>GW: GET /api/administration/parameters/PAR-01
+    GW->>AD: reenvía con JWT
+    AD->>ID: ¿el usuario tiene rol y permisos?
+    ID-->>AD: sí / no
+    AD-->>GW: datos o 403
     GW-->>B: respuesta
 ```
 
 ## Asíncrona — Eventos Apache Kafka
 
-Para procesos desacoplados: auditoría, read models, notificaciones, propagación de cambios. **Kafka** es el broker elegido (ADR-003); RabbitMQ queda como alternativa.
+Para procesos desacoplados: auditoría, read models, propagación de cambios. **Kafka** es el broker elegido (ADR-003); RabbitMQ queda como alternativa.
+
+**Publicación (BackOffice):**
 
 ```mermaid
 sequenceDiagram
-    participant CS as Course Service
-    participant K as Kafka (topic: course.events)
+    participant AD as Administration Service
+    participant K as Kafka (topic: administration.events)
     participant AU as Audit Service (consumer group: audit)
-    participant RP as Reporting Service (consumer group: reporting)
+    participant GS as Gamification (cross-team)
 
-    CS->>CS: persistir + escribir Outbox (misma transacción)
-    CS->>K: CourseArchived (partición por courseId)
+    AD->>AD: persistir + escribir Outbox (misma transacción)
+    AD->>K: GlobalConfigurationChanged (partición por key)
     K->>AU: registrar auditoría
-    K->>RP: actualizar read model
+    K->>GS: Gamification aplica hacia adelante (RF-CFG-06)
+```
+
+**Consumo (reportes/métricas):**
+
+```mermaid
+sequenceDiagram
+    participant CS as Cursos Service (equipo Cursos)
+    participant K as Kafka (topic: course.events)
+    participant RP as Reporting & Analytics (consumer group: reporting)
+
+    CS->>K: CourseArchived / RosterUpdated (por courseId)
+    K->>RP: actualizar read models (métricas, reportes)
 ```
 
 ### Topics y particionado
 
-| Topic | Eventos | Particionado |
-|---|---|---|
-| `identity.events` | UserCreated, UserRoleChanged, AdminDeleted, AdminRecoveryExecuted | por `actorId` |
-| `course.events` | CourseCreated/Activated/Archived, RosterUpdated | **por `courseId`** (orden por tenant) |
-| `configuration.events` | GlobalConfigurationChanged | por `key` |
-| `audit.events` | eventos de auditoría | por `actorId` |
-| `retention.events` | RetentionDecisionCreated, DataAnonymized | por `courseId` |
+| Topic | Eventos | Rol BackOffice | Particionado |
+|---|---|---|---|
+| `identity.events` | AdminCreated, AdminDeleted, AdminRecoveryExecuted, RoleChanged | Publica | por `actorId` |
+| `administration.events` | GlobalConfigurationChanged, ModelProviderChanged, ModelFunctionChanged | Publica | por `key` |
+| `audit.events` | eventos de auditoría | Publica | por `actorId` |
+| `retention.events` | RetentionDecisionCreated, DataAnonymized | Publica | por `resourceId` |
+| `course.events` | CourseCreated/Activated/Archived, RosterUpdated | **Consume** | por `courseId` |
+| `gamification.events` / `ranking.events` / `survey.events` | eventos de otros equipos | **Consume** | por `courseId` |
 
 Cada **consumer group** (un servicio) lee con su offset propio. Kafka permite **replay**: reconstruir read models de Reporting o la auditoría desde cero (clave para RF-AUD-04).
 
@@ -78,12 +93,12 @@ Evita perder un evento tras confirmar una transacción:
 
 ```text
 BEGIN TRANSACTION
-  UPDATE course SET status = 'ARCHIVED' ...
-  INSERT OutboxEvent(type = 'CourseArchived', payload = ...)
+  UPDATE GlobalParameter SET value = ... (nueva versión)
+  INSERT OutboxEvent(type = 'GlobalConfigurationChanged', payload = ...)
 COMMIT
         │
         ▼
-   Publisher → Kafka (topic course.events)
+   Publisher → Kafka (topic administration.events)
 ```
 
 ## Idempotencia en consumidores
@@ -99,46 +114,44 @@ Cada evento lleva `event_id`. El consumidor registra qué eventos ya procesó:
 ## Eventos de dominio (ejemplos)
 
 ```text
-UserCreated · AdminDeleted · AdminRecoveryExecuted
-GlobalConfigurationChanged
-CourseCreated · CourseUpdated · CourseActivated · CourseArchived
-RosterUpdated
-ChallengeCreated · ChallengeUpdated
+AdminDeleted · AdminRecoveryExecuted · RoleChanged
+GlobalConfigurationChanged · ModelProviderChanged · ModelFunctionChanged
 RetentionDecisionCreated · DataAnonymized
 ```
+> El BackOffice también **consume**: CourseArchived/RosterUpdated (Cursos), eventos de Gamificación/Ranking/Encuestas.
 
 **Formato común de evento:**
 
 ```json
 {
   "eventId": "uuid",
-  "eventType": "CourseArchived",
+  "eventType": "ModelProviderChanged",
   "occurredAt": "2026-08-28T12:00:00Z",
   "correlationId": "uuid",
   "actorId": "uuid",
-  "source": "course-service",
+  "source": "administration-service",
   "payload": {}
 }
 ```
 
-## Flujo crítico: creación de curso
+## Flujo crítico: gestión de proveedor de modelo (ADMIN)
 
 ```mermaid
 sequenceDiagram
-    participant P as Profesor
+    participant A as ADMIN
     participant GW as Gateway
-    participant CS as Course Service
+    participant AD as Administration Service
     participant K as Kafka
     participant AU as Audit
-    participant RP as Reporting
+    participant AI as AI Service (cross-team)
 
-    P->>GW: POST /api/courses
-    GW->>CS: valida JWT y rol
-    CS->>CS: valida datos + crea Course + Outbox
-    CS->>K: CourseCreated
+    A->>GW: POST /api/administration/model-providers
+    GW->>AD: valida JWT y rol ADMIN
+    AD->>AD: valida datos + registra proveedor + Outbox
+    AD->>K: ModelProviderChanged
     K->>AU: auditoría
-    K->>RP: read model
-    CS-->>P: 201 Created
+    K->>AI: consume la configuración
+    AD-->>A: 201 Created
 ```
 
 ## Flujo crítico: baja de ADMIN

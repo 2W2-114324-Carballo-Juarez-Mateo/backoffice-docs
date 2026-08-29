@@ -4,13 +4,15 @@
 
 Backend del módulo **BackOffice** de la Plataforma Gamificada. Stack: **Java 21 · Spring Boot 3 · Maven** · Microservicios · Apache Kafka · PostgreSQL.
 
+> **Alcance oficial:** administración de plataforma · gestión del proveedor de modelo (exclusiva ADMIN) · reportes docentes · panel de métricas de curso · exportación de datos. Cursos, desafíos y usuarios son de otros equipos (se consumen vía eventos).
+
 ## Contenido de esta sección
 
 | Página | Qué contiene |
 |---|---|
-| [Resumen visual](/backend/resumen) | Qué hace el BackOffice, los 5 microservicios, stack y reglas críticas |
+| [Resumen visual](/backend/resumen) | Qué hace el BackOffice, los 4 microservicios, stack y reglas críticas |
 | [Vista general](/backend/arquitectura/vista-general) | Diagrama de la arquitectura, componentes y principios |
-| [Microservicios](/backend/arquitectura/microservicios) | Detalle de los 5 servicios y sus bases |
+| [Microservicios](/backend/arquitectura/microservicios) | Detalle de los 4 servicios y sus bases |
 | [Comunicación](/backend/arquitectura/comunicacion) | Service Discovery (Eureka), REST + Kafka, Outbox, idempotencia |
 | [Patrones de diseño](/backend/arquitectura/patrones) | Patrones Java aplicados por lugar concreto |
 | [Estructura de carpetas](/backend/arquitectura/carpetas) | Monorepo Maven + Clean Architecture |

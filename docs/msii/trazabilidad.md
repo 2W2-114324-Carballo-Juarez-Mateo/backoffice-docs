@@ -4,30 +4,31 @@
 
 | Requerimiento | Microservicio |
 |---|---|
-| RF-ROL-* | Identity |
-| RF-USR-* | Identity / Course |
-| RF-CFG-* | Configuration |
-| RF-CUR-* | Course |
-| RF-DES-* | Course |
+| RF-ROL-* | Identity & Access |
+| RF-USR-* (lado ADMIN) | Identity & Access |
+| RF-CFG-* | Administration & Configuration |
+| RF-IA-ADM-* (proveedores de modelo) | Administration & Configuration |
+| RF-RPT-* / RF-REP-* (reportes, métricas, export) | Reporting & Analytics |
 | RF-AUD-* | Audit |
-| RF-RET-* | Configuration / Audit / dominio correspondiente |
-| RF-REP-* | Reporting |
+| RF-RET-* | Administration & Configuration / Audit |
 | RNF seguridad | Gateway + todos |
 | RNF auditoría | Audit + todos |
 | RNF observabilidad | Todos |
 | RNF escalabilidad | Todos |
 | RNF idempotencia | Todos los consumidores |
 
+> **Fuera de la matriz (otros equipos):** RF-CUR-*, RF-DES-*, RF-USR onboarding, gamificación, ranking, chat, notificaciones, encuestas de alumno, IA como producto. El BackOffice **consume** sus eventos para reportes/métricas.
+
 ## Trazabilidad de flujos críticos
 
-### Creación y activación de curso
+### Gestión de proveedor de modelo (ADMIN)
 
 ```text
-RF-CUR-01..08b
+RF-IA-ADM-01..07 (RF-IA-23/24/25/35)
     ↓
-Course Service
-    ├── User Service → padrón
-    └── AI Service   → calibración (cross-team)
+Administration & Configuration Service
+    ├── ModelProvider / ModelFunctionAssignment / EvaluatorConfig / GoldenSet
+    └── evento ModelProviderChanged → AI Service (cross-team)
 ```
 
 ### Baja de ADMIN
@@ -35,7 +36,7 @@ Course Service
 ```text
 RF-ROL-02/03/05/06
     ↓
-Identity Service
+Identity & Access Service
     ├── validaciones (auto-eliminación, último ADMIN, 2FA)
     └── Auditoría
 ```
@@ -45,31 +46,17 @@ Identity Service
 ```text
 RF-CFG-04/05/06
     ↓
-Configuration Service
+Administration & Configuration Service
     ├── versionado + hacia adelante
     └── evento GlobalConfigurationChanged → Gamification (cross-team)
 ```
 
-### Cierre de curso
+### Reportes y métricas de curso
 
 ```text
-RF-RNK-10/13 · RF-CUR-07
+RF-RPT-01/02/03 · RF-REP-01..04
     ↓
-Course Service → Ranking (estado académico) → CourseArchived
-    ↓
-Audit + Reporting
+Reporting & Analytics Service
+    ├── consume course.events / gamification.events / ranking.events / survey.events
+    └── read models agregados (satisfacción, engagement, aprobación) + exportación
 ```
-
-## Definition of Done (BackOffice)
-
-Una funcionalidad está terminada cuando:
-
-- [ ] Tiene RF asociado y caso de uso.
-- [ ] Tiene endpoint documentado (OpenAPI) y autorización.
-- [ ] Tiene validaciones de dominio y persistencia.
-- [ ] Tiene auditoría/eventos si corresponde.
-- [ ] Tiene pruebas unitarias e integración.
-- [ ] Maneja errores y logs, propaga correlation ID.
-- [ ] No accede a la DB de otro microservicio.
-- [ ] Corre en Docker Compose y tiene migraciones.
-- [ ] Está en la matriz de trazabilidad.

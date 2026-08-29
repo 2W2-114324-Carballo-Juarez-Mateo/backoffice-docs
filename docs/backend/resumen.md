@@ -1,52 +1,43 @@
 # Resumen visual
 
-> **Frontend:** por definir. Este sitio cubre **backend y requerimientos**. El frontend consumirá la API a través del Gateway cuando los docentes definan la arquitectura.
+> **Frontend:** por definir. Este sitio cubre **backend y requerimientos**.
+> **Alcance oficial del BackOffice:** administración de plataforma · gestión del proveedor de modelo (exclusiva ADMIN) · reportes docentes · panel de métricas de curso · exportación de datos.
 
 ## ¿Qué hace el BackOffice?
 
-Backend administrativo para **ADMIN** y **PROFESOR**, con trazabilidad y seguridad.
-
-| Rol | Qué puede hacer | Alcance |
-|---|---|---|
-| **ADMIN** | Todo, config global, auditoría, gestión de ADMIN | Toda la plataforma |
-| **PROFESOR** | Crea/administra sus cursos, padrón, desafíos, config de curso | Sus cursos |
-| **ALUMNO** | Participa y compite (fuera del BackOffice) | Su info y progreso |
+Backend administrativo para **ADMIN** y **PROFESOR**, con trazabilidad y seguridad. **No** implementa cursos, desafíos ni usuarios (equipos propios); los **consume** vía eventos para reportes y métricas.
 
 ## Arquitectura en una imagen
 
 ```mermaid
 flowchart TB
     FE["Frontend (por definir)"] -.-> GW[API Gateway · Spring Cloud]
-    GW --> ID[Identity & User]
-    GW --> CS[Course & Content]
-    GW --> CF[Configuration]
+    GW --> ID[Identity & Access · lado ADMIN]
+    GW --> AD[Administration & Configuration]
+    GW --> RP[Reporting & Analytics]
     GW --> AU[Audit]
-    GW --> RP[Reporting]
 
     ID --> DB1[(identity_db)]
-    CS --> DB2[(course_db)]
-    CF --> DB3[(configuration_db)]
+    AD --> DB2[(administration_db)]
+    RP --> DB3[(reporting_db)]
     AU --> DB4[(audit_db)]
-    RP --> DB5[(reporting_db)]
 
     E[Eureka · Discovery] -.-> GW
     CFG[Config Server] -.-> GW
-    K[Kafka · Event Broker] <--> ID
-    K <--> CS
-    K <--> CF
+    K[Kafka] <--> AD
+    RP -. consume eventos cross-team .-> K
 ```
 
-**Principios:** Database per Service · REST + eventos · Outbox · Idempotencia · Autorización en Gateway y en cada servicio · Correlation ID · **Service Discovery con Eureka** (los servicios se registran al iniciar y el Gateway consulta la ubicación de la instancia activa).
+**Principios:** Database per Service · REST + eventos (Kafka) · Outbox · Idempotencia · Autorización en Gateway y en cada servicio · Correlation ID · Service Discovery (Eureka).
 
-## Los 5 microservicios
+## Los 4 microservicios
 
 | Servicio | Responsabilidad | Base |
 |---|---|---|
-| **Identity & User** | Login, 2FA, roles, reglas de ADMIN (último ADMIN, break-glass) | identity_db |
-| **Course & Content** | Cursos, estados, padrón, desafíos, transiciones de estado | course_db |
-| **Configuration** | Parámetros globales (PAR-01..18), versionado, cambios hacia adelante | configuration_db |
-| **Audit** | Registro de operaciones administrativas sensibles (inmutable) | audit_db |
-| **Reporting** | Consultas y agregados administrativos (read models) | reporting_db |
+| **Identity & Access** | Auth, 2FA, roles/permisos, gestión de ADMIN (último ADMIN, break-glass) | identity_db |
+| **Administration & Configuration** | PAR-01..18 + **proveedores/modelos de IA** (RF-IA-23/24/25/35) | administration_db |
+| **Reporting & Analytics** | Reportes docentes, métricas de curso, exportación | reporting_db |
+| **Audit** | Registro inmutable de acciones administrativas | audit_db |
 
 ## Stack tecnológico
 
@@ -67,7 +58,8 @@ flowchart TB
 
 - Nunca queda la plataforma **sin ADMIN activo** (incondicional, con concurrencia).
 - Un ADMIN **no puede auto-eliminarse**; baja reforzada (contraseña + 2FA + confirmación escrita).
-- **No existe hard delete** (baja lógica); la única excepción es el chat social, que no es del BackOffice.
+- **No existe hard delete** (baja lógica).
 - Los cambios de configuración **rigen solo hacia adelante** (no se recalculan datos históricos).
-- Un curso **no se activa** sin padrón cargado + calibración de IA aprobada; no hay override.
+- La **gestión de proveedores de modelo** es exclusiva de ADMIN (RF-IA-35).
+- Las encuestas se consumen solo como **agregados anónimos** (RF-ENC-04).
 - La auditoría es **inmutable** y separada de los logs técnicos.
