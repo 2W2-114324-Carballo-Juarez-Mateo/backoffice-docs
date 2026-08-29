@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { withBase } from 'vitepress'
 
 const open = ref(false)
 const root = ref(null)
@@ -34,11 +35,11 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
     <transition name="sdd-fade">
       <div v-if="open" class="sdd-menu" role="menu">
         <div class="sdd-menu-title">Software Design Documents</div>
-        <a class="sdd-item" role="menuitem" href="/sdd/sdd-frontend.zip" download>
+        <a class="sdd-item" role="menuitem" :href="withBase('/sdd/sdd-frontend.zip')" download @click.stop>
           <span>SDD — Frontend</span>
           <span class="sdd-tag">.zip</span>
         </a>
-        <a class="sdd-item" role="menuitem" href="/sdd/sdd-backend.zip" download>
+        <a class="sdd-item" role="menuitem" :href="withBase('/sdd/sdd-backend.zip')" download @click.stop>
           <span>SDD — Backend</span>
           <span class="sdd-tag">.zip</span>
         </a>
@@ -112,11 +113,19 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
   border-radius: 8px;
   font-size: 13px;
   color: var(--vp-c-text-1);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-.sdd-item.disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
+.sdd-item:hover {
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-brand-1);
+}
+
+.sdd-item:hover .sdd-tag {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
 }
 
 .sdd-tag {
