@@ -1,23 +1,17 @@
 # Trazabilidad RF → componente
 
-> Cada requerimiento del PRD debe trazarse a un componente. Si un requerimiento no está trazado, no está hecho.
+> Cada requerimiento del PRD debe trazarse a un componente. El Backoffice (Tema 12) es **consumidor puro**: traza solo sus RF; el resto es de otros temas.
 
-| Requerimiento | Microservicio |
+| Requerimiento | Servicio / Tema |
 |---|---|
-| RF-ROL-* | Identity & Access |
-| RF-USR-* (lado ADMIN) | Identity & Access |
-| RF-CFG-* | Administration & Configuration |
-| RF-IA-ADM-* (proveedores de modelo) | Administration & Configuration |
-| RF-RPT-* / RF-REP-* (reportes, métricas, export) | Reporting & Analytics |
-| RF-AUD-* | Audit |
-| RF-RET-* | Administration & Configuration / Audit |
-| RNF seguridad | Gateway + todos |
-| RNF auditoría | Audit + todos |
-| RNF observabilidad | Todos |
-| RNF escalabilidad | Todos |
-| RNF idempotencia | Todos los consumidores |
-
-> **Fuera de la matriz (otros equipos):** RF-CUR-*, RF-DES-*, RF-USR onboarding, gamificación, ranking, chat, notificaciones, encuestas de alumno, IA como producto. El BackOffice **consume** sus eventos para reportes/métricas.
+| RF-CFG-* | Administration & Configuration (Backoffice) |
+| RF-IA-ADM-* (proveedores de modelo) | Administration & Configuration (Backoffice) |
+| RF-RPT-* / RF-REP-* (reportes, panel, métricas, export, alertas) | Reporting & Analytics (Backoffice) |
+| RF-ROL-* · RF-USR onboarding · RF-AUD-* · RF-RET-* | **Tema 01** (consumidos) |
+| RF-CUR-* (cohorte) · matrícula | **Tema 02** (consumidos) |
+| RF-DES-*, RF-IA-* producto, gamificación, ranking, chat, encuestas | Temas 03-11 (solo lectura 02/04/05/07/08/10) |
+| RNF seguridad | Gateway (Tema 01) + servicios |
+| RNF observabilidad / escalabilidad / idempotencia | Todos |
 
 ## Trazabilidad de flujos críticos
 
@@ -28,17 +22,7 @@ RF-IA-ADM-01..07 (RF-IA-23/24/25/35)
     ↓
 Administration & Configuration Service
     ├── ModelProvider / ModelFunctionAssignment / EvaluatorConfig / GoldenSet
-    └── evento ModelProviderChanged → AI Service (cross-team)
-```
-
-### Baja de ADMIN
-
-```text
-RF-ROL-02/03/05/06
-    ↓
-Identity & Access Service
-    ├── validaciones (auto-eliminación, último ADMIN, 2FA)
-    └── Auditoría
+    └── evento ModelProviderChanged → T07 (Evaluación LLM, cross-team)
 ```
 
 ### Configuración global
@@ -48,15 +32,29 @@ RF-CFG-04/05/06
     ↓
 Administration & Configuration Service
     ├── versionado + hacia adelante
-    └── evento GlobalConfigurationChanged → Gamification (cross-team)
+    └── evento GlobalConfigurationChanged → Temas 03/05/08/10 (aplican la config)
 ```
 
 ### Reportes y métricas de curso
 
 ```text
-RF-RPT-01/02/03 · RF-REP-01..04
+RF-RPT-01..10
     ↓
 Reporting & Analytics Service
-    ├── consume course.events / gamification.events / ranking.events / survey.events
-    └── read models agregados (satisfacción, engagement, aprobación) + exportación
+    ├── consume lecturas de los temas 02/04/05/07/08/10 (frescura ≤ 15 min)
+    └── read models agregados (CSAT, engagement, alumno en riesgo) + exportación
 ```
+
+## Definition of Done (Backoffice)
+
+Una funcionalidad está terminada cuando:
+
+- [ ] Tiene RF asociado y caso de uso.
+- [ ] Tiene endpoint documentado (OpenAPI) y autorización.
+- [ ] Tiene validaciones de dominio y persistencia.
+- [ ] Emite/consume eventos según el contrato (Outbox + idempotencia).
+- [ ] Tiene pruebas unitarias e integración.
+- [ ] Maneja errores y logs, propaga correlation ID.
+- [ ] No accede a la DB de otro microservicio; **toda llamada síncrona pasa por el gateway**.
+- [ ] Corre en Docker Compose y tiene migraciones.
+- [ ] Está en la matriz de trazabilidad.

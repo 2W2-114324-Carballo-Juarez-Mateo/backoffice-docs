@@ -14,10 +14,8 @@ backoffice-backend/
 │   └── src/main/java/com/backoffice/gateway/
 │
 ├── services/
-│   ├── identity-access-service/  ──→ com/backoffice/identity/{api,application,domain,infrastructure}
 │   ├── administration-service/   ──→ com/backoffice/administration/...
-│   ├── reporting-service/        ──→ com/backoffice/reporting/...
-│   └── audit-service/            ──→ com/backoffice/audit/...
+│   └── reporting-service/        ──→ com/backoffice/reporting/...
 │
 ├── building-blocks/
 │   ├── contracts/              ← DTOs y contratos de eventos compartidos
@@ -85,6 +83,6 @@ administration-service/
 
 ```text
 discovery-server (Eureka) · config-server · gateway
-identity-access-service · administration-service · reporting-service · audit-service
+administration-service · reporting-service
 PostgreSQL (una base por servicio) · Kafka (KRaft)
 ```

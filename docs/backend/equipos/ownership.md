@@ -1,43 +1,42 @@
 # Ownership entre equipos
 
-> La clase se dividió por módulos (microservicios). Cada módulo tiene un **dueño**. El BackOffice cubre **4 servicios**; el resto de los dominios son de otros equipos y el BackOffice solo los **consume** (eventos/APIs) para reportes y métricas.
+> Según `TUP_PIV_BE_PROPUESTA_ARQ.pdf` la plataforma se divide en **12 temas**. El Backoffice es el **Tema 12** y es **consumidor puro**: tiene 2 servicios propietarios y consume/lee el resto.
 
-## Matriz de ownership
+## Matriz de ownership por tema
 
-| Servicio / Dominio | Dueño | Rol del BackOffice |
+| Tema | Dominio | Rol del Backoffice |
 |---|---|---|
-| Auth, roles, permisos, gestión de ADMIN | **BackOffice** (Identity & Access) | Propietario |
-| Configuración global (PAR-01..18) | **BackOffice** (Administration) | Propietario |
-| Proveedores/modelos de IA (RF-IA-23/24/25/35) | **BackOffice** (Administration) | Propietario (configuración; el AI Service la consume) |
-| Reportes docentes, métricas de curso, exportación | **BackOffice** (Reporting & Analytics) | Propietario |
-| Auditoría | **BackOffice** (Audit) | Propietario |
-| User (datos, legajo, **avatar**, perfil, onboarding) | equipo Usuarios | **No** — solo consumo/consulta administrativa |
-| Course (cursos, roadmap, padrón, estados) | equipo Cursos | **No** — consume eventos (CourseArchived, RosterUpdated) para reportes/métricas |
-| Challenge (desafíos) | equipo Desafíos | **No** |
-| Gamification (XP, monedas, vidas) | equipo Gamificación | **No** — solo configura PAR que ellos consumen |
-| Ranking / Cierre académico | equipo Ranking | **No** — consume datos para métricas |
-| AI Service (tutor/evaluador como producto) | equipo IA | **No** — consume la config de proveedores que administramos |
-| Communication (chat) | equipo Comunicación | **No** |
-| Encuestas de alumno | equipo Encuestas | **No** — consume agregados anónimos |
+| **T12 (Backoffice)** | Administración de plataforma · **PAR-01..24** · proveedor LLM (exclusiva ADMIN) · reportes docentes · panel del profesor (alumno en riesgo) · métricas CSAT · exportación · alertas | **Propietario (2 servicios)** |
+| **T01** | Identidad, auth, 2FA, roles, token, sesión, **auditoría**, retención, **API Gateway** | **Consume** (auth/autorización/auditoría; gateway de plataforma) |
+| **T02** | Cursos y Matrícula (curso-cohorte, padrón, invitación) | **Consume** (cohorte `course_id`, pertenencia docente) |
+| T03 | Motor de Desafíos | Solo lectura |
+| T04 | Teóricos y Encuestas | Solo lectura (agregados anónimos) |
+| T05 | Desafíos Prácticos | Solo lectura |
+| T06 | Sandbox/Runtime | — |
+| T07 | Evaluación LLM | Solo lectura (consume config de proveedores que administramos) |
+| T08 | Banco | Solo lectura |
+| T09 | Mercado | — |
+| T10 | Roadmap y Progreso | Solo lectura |
+| T11 | Social y Notificaciones | — |
 
-> Matriz a acordar con los demás equipos antes de la defensa.
+> Regla "cada entidad tiene un único dueño": matriz a acordar en la sesión de integración.
 
 ## Contratos cross-team (dependencias críticas)
 
-### 1. Configuración de proveedores de modelo → AI Service
-- **Dependencia:** Administration (BackOffice) → AI Service (equipo IA).
-- **Mecanismo:** evento `ModelProviderChanged` / `GlobalConfigurationChanged` en el topic `administration.events`.
+### 1. Configuración de proveedores de modelo → T07 (Evaluación LLM)
+- **Mecanismo:** evento `ModelProviderChanged` / `GlobalConfigurationChanged` en `administration.events`.
 - **Regla:** solo ADMIN puede cambiarla (RF-IA-35).
 
-### 2. Parámetros de economía → Gamification (RF-CFG-04)
-- **Mecanismo:** evento `GlobalConfigurationChanged` (`{key, value, version}`).
+### 2. Parámetros de economía → los aplican T03, T05, T08, T10
+- **Mecanismo:** evento `GlobalConfigurationChanged` (`{key, value, version}`); esos temas leen la configuración (no la hardcodean).
 - **Regla:** cambios hacia adelante (RF-CFG-06).
 
-### 3. Reportes/métricas consumen eventos de otros dominios
-- **Mecanismo:** Reporting & Analytics (BackOffice) consume `course.events`, `gamification.events`, `ranking.events`, `survey.events` para read models, sin acceder a sus bases.
+### 3. Contratos de lectura del Backoffice (consumidor puro)
+- **Mecanismo:** Reporting & Analytics lee de los temas **02, 04, 05, 07, 08, 10** (eventos/APIs a través del gateway) para read models. **Sin esos contratos en el sprint 1 no hay nada demostrable.**
 - **Encuestas:** solo agregados anónimos (RF-ENC-04/12).
 
-### 4. Intervención excepcional de ADMIN sobre cursos
-- **Mecanismo:** si el PRD otorga a ADMIN intervención excepcional sobre cursos (RF-CUR-08), se hace por la **API del equipo Cursos** (cross-team), no con servicio propio.
+### 4. Autorización y auditoría
+- **Auth/autorización:** el gateway (T01) valida el token y propaga contexto; la decisión la toma el servicio dueño de la regla (*validar ≠ autorizar*).
+- **Auditoría:** el Backoffice emite eventos de auditoría; T01 los persiste.
 
 > **Convención de eventos:** todos siguen `{eventId, eventType, occurredAt, correlationId, actorId, source, payload}`, con contrato versionado.

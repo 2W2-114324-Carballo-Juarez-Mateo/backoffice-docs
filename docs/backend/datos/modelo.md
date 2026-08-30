@@ -1,33 +1,18 @@
 # Modelo de datos
 
-> Database per Service. Solo los **4 servicios del BackOffice**; los dominios de otros equipos (cursos, desafíos, usuarios) se consumen vía eventos, no se modelan acá.
+> Database per Service. **Solo los 2 servicios propietarios del Backoffice**; identidad/roles/auditoría (Tema 01), cohorte (Tema 02) y los demás temas no se modelan acá (se consumen/leen).
 
-## 1. identity_db — cuentas administrativas
-
-| Campo | Tipo | Notas |
-|---|---|---|
-| id | UUID | PK |
-| first_name / last_name | varchar(100) | |
-| email | varchar(255) | único, whitelist |
-| password_hash | varchar(255) | bcrypt |
-| role | enum | ADMIN \| PROFESOR |
-| two_factor_enabled | boolean | |
-| status | enum | ACTIVE \| DISABLED |
-| created_at / deleted_at | timestamp | baja lógica |
-
-> El dominio de usuarios/alumnos (avatar, perfil, onboarding) es del equipo Usuarios.
-
-## 2. administration_db — configuración y proveedores de modelo
+## 1. administration_db — configuración y proveedores de modelo
 
 **GlobalParameter**
 
 | Campo | Tipo | Notas |
 |---|---|---|
 | id | UUID | PK |
-| key | varchar(20) | PAR-01..PAR-18 |
+| key | varchar(20) | PAR-01..PAR-24 (base PRD PAR-01..18; registro extensible) |
 | value | jsonb | versionado (RF-CFG-06) |
 | version | int | incrementa por cambio |
-| updated_by / updated_at | UUID / timestamp | |
+| updated_by / updated_at | UUID / timestamp | FK lógica → Tema 01 |
 
 **ModelProvider** (RF-IA-35)
 
@@ -64,44 +49,33 @@
 | entries | jsonb | transcripciones puntuadas de referencia |
 | tolerance_ok | boolean | dentro de PAR-14 |
 
-## 3. reporting_db — read models (reportes, métricas, export)
+## 3. reporting_db — read models (reportes, métricas, export, alertas)
 
 ```text
-CourseMetricsSnapshot   ← course/gamification/ranking/survey events
-TeacherReportSnapshot   ← eventos por curso
+CohortMetricsSnapshot   ← lecturas de los temas 02/04/05/07/08/10
+TeacherReportSnapshot   ← reportes docentes por cohorte
+AtRiskStudentSnapshot   ← panel del profesor: alumno en riesgo
 ConfigurationSnapshot   ← GlobalConfigurationChanged
 ModelProviderSnapshot   ← cambios de proveedores/modelos
 ```
 
-Reconstruibles por **replay** de Kafka.
+Reconstruibles por **replay** de Kafka. **Frescura ≤ 15 min.**
 
-## 4. audit_db — AuditEvent (inmutable)
+## 4. Auditoría — persistida por el Tema 01
 
-| Campo | Tipo | Notas |
-|---|---|---|
-| id | UUID | PK |
-| event_id | UUID | correlaciona con evento Kafka |
-| actor_id / actor_role | UUID / enum | |
-| action | varchar(100) | ADMIN_DELETED, GLOBAL_CONFIG_CHANGED, MODEL_PROVIDER_CHANGED |
-| resource_type / resource_id | varchar | |
-| timestamp | timestamp | UTC |
-| result | enum | SUCCESS \| FAILURE \| BLOCKED |
-| reason | varchar(255) | |
-| correlation_id | UUID | |
-| metadata | jsonb | |
+La tabla `AuditEvent` (evento, actor, rol, acción, recurso, resultado, motivo, correlation ID, metadata) pertenece al **Tema 01**. El Backoffice **emite** los eventos de auditoría de sus acciones administrativas y puede **consultarla** vía contrato de lectura, pero no la persiste.
 
 ## Relaciones principales (conceptuales)
 
 ```mermaid
 erDiagram
-    ADMIN_ACCOUNT ||--o{ AUDIT_EVENT : performs
-    ADMIN_ACCOUNT ||--o{ GLOBAL_PARAMETER : updates
-    MODEL_PROVIDER ||--o{ MODEL_FUNCTION_ASSIGNMENT : assigned
     GLOBAL_PARAMETER ||--o{ CONFIGURATION_SNAPSHOT : feeds
+    MODEL_PROVIDER ||--o{ MODEL_FUNCTION_ASSIGNMENT : assigned
+    GLOBAL_PARAMETER ||--o{ MODEL_PROVIDER : scopes
 ```
 
 ## Reglas de datos transversales
 
 - **Baja lógica** en toda producción académica: `deleted_at`, `deleted_by`, `deletion_reason`.
 - **Encuestas:** solo agregados anónimos (RF-ENC-04/12); sin vínculo autor ↔ respuesta.
-- **Retención:** 5 años desde el cierre; vencimiento → decisión de ADMIN (extender / anonimizar); nunca purga automática.
+- **Sin comparación entre docentes.** Retención: la decide el ADMIN vía Tema 01.

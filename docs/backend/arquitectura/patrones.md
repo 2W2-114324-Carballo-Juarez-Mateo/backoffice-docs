@@ -72,13 +72,14 @@
 
 | Patrón | Paquete propuesto | RF | Servicio |
 |---|---|---|---|
-| Specification | `identity.domain.specifications` · `administration.domain.specifications` | RF-ROL-05 · RF-CFG-06 | Identity / Administration |
+| Specification | `administration.domain.specifications` | RF-CFG-06 · RF-IA-35 | Administration |
 | Strategy | `administration.domain.retention` | RF-RET-03 | Administration |
 | Null Object | `administration.infrastructure.external` | RNF-06 | Administration |
 | Command | `*.application.commands` | capas | Todos |
-| Chain of Responsibility | `identity.application.validation` | RF-ROL-06 · RF-RPT-04 | Identity / Reporting |
-| Decorator | `audit.application` | RF-AUD-01/03 | Audit |
-| Adapter | `*.infrastructure.external` | cross-team | Todos |
+| Chain of Responsibility | `reporting.api.security` | RF-RPT-08 | Reporting |
+| Decorator | (auditoría emitida al Tema 01) | RF-IA-ADM-01 | Administration |
+| Adapter | `*.infrastructure.external` | contratos de lectura | Todos |
+| Repository | `*.infrastructure.persistence` | RNF-04 | Todos |
 | Observer + Outbox | `*.domain.events` · `*.messaging.outbox` | §12/§13 | Todos |
 | Unit of Work | `@Transactional` | §13 | Todos |
 | Idempotency Key | `*.api.filter` | 429/duplicados | Todos (críticas) |

@@ -31,14 +31,16 @@ Cuando se necesita respuesta inmediata (consultas, validaciones para completar u
 ```mermaid
 sequenceDiagram
     participant B as BackOffice
-    participant GW as API Gateway
+    participant GW as API Gateway de PLATAFORMA (T01)
     participant AD as Administration Service
-    participant ID as Identity & Access
+    participant T01 as Tema 01 (Identidad)
 
     B->>GW: GET /api/administration/parameters/PAR-01
     GW->>AD: reenvía con JWT
-    AD->>ID: ¿el usuario tiene rol y permisos?
-    ID-->>AD: sí / no
+    AD->>GW: consulta rol/permisos (sync por el gateway)
+    GW->>T01: autorización
+    T01-->>GW: sí / no
+    GW-->>AD: resultado
     AD-->>GW: datos o 403
     GW-->>B: respuesta
 ```
@@ -53,12 +55,12 @@ Para procesos desacoplados: auditoría, read models, propagación de cambios. **
 sequenceDiagram
     participant AD as Administration Service
     participant K as Kafka (topic: administration.events)
-    participant AU as Audit Service (consumer group: audit)
+    participant T01 as Tema 01 (auditoría)
     participant GS as Gamification (cross-team)
 
     AD->>AD: persistir + escribir Outbox (misma transacción)
     AD->>K: GlobalConfigurationChanged (partición por key)
-    K->>AU: registrar auditoría
+    K->>T01: persiste auditoría
     K->>GS: Gamification aplica hacia adelante (RF-CFG-06)
 ```
 
@@ -139,22 +141,22 @@ RetentionDecisionCreated · DataAnonymized
 ```mermaid
 sequenceDiagram
     participant A as ADMIN
-    participant GW as Gateway
+    participant GW as Gateway de plataforma (T01)
     participant AD as Administration Service
     participant K as Kafka
-    participant AU as Audit
-    participant AI as AI Service (cross-team)
+    participant T01 as Tema 01 (auditoría)
+    participant T07 as Tema 07 (Evaluación LLM)
 
     A->>GW: POST /api/administration/model-providers
     GW->>AD: valida JWT y rol ADMIN
     AD->>AD: valida datos + registra proveedor + Outbox
     AD->>K: ModelProviderChanged
-    K->>AU: auditoría
-    K->>AI: consume la configuración
+    K->>T01: persiste auditoría
+    K->>T07: consume la configuración
     AD-->>A: 201 Created
 ```
 
-## Flujo crítico: baja de ADMIN
+## Flujo crítico: baja de ADMIN — **del Tema 01 (consumido)**
 
 ```mermaid
 flowchart TD
@@ -169,7 +171,7 @@ flowchart TD
     E -- Sí --> F{¿quedará al menos un ADMIN?}
     F -- No --> X
     F -- Sí --> G[Baja lógica + Outbox]
-    G --> H[Kafka → Audit Service]
+    G --> H[Kafka → Tema 01 persiste auditoría]
 ```
 
 > La protección del último ADMIN debe manejarse con **transacción y revalidación** (concurrencia), no solo con validación previa.

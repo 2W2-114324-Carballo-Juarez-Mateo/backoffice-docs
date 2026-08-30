@@ -1,26 +1,17 @@
 # Arquitectura — Vista general
 
-> Estilo: **microservicios orientados a dominios**. No un microservicio por entidad; sí uno por bounded context. Frontend por definir. El BackOffice cubre **4 servicios**; los dominios de cursos/desafíos/usuarios son de otros equipos y se consumen vía eventos.
+> Estilo: **microservicios orientados a dominios**. El Backoffice (Tema 12) es **consumidor puro** con **2 servicios propietarios**; identidad/roles/auditoría (Tema 01), cohorte (Tema 02) y los demás temas se consumen/leen.
 
 ## Diagrama
 
 ```mermaid
 flowchart TB
-    subgraph CLIENTE[Consumidores]
-        FE["Frontend (por definir)"]
-    end
-
-    FE --> GW[API Gateway · Spring Cloud Gateway]
-
-    GW --> ID[Identity & Access · lado ADMIN]
+    FE["Frontend (por definir)"] --> GW[API Gateway de PLATAFORMA · Tema 01]
     GW --> AD[Administration & Configuration]
     GW --> RP[Reporting & Analytics]
-    GW --> AU[Audit Service]
 
-    ID --> DB1[(identity_db)]
-    AD --> DB2[(administration_db)]
-    RP --> DB3[(reporting_db)]
-    AU --> DB4[(audit_db)]
+    AD --> DB1[(administration_db)]
+    RP --> DB2[(reporting_db)]
 
     subgraph INFRA[Infraestructura]
         EU[Eureka · Discovery]
@@ -29,33 +20,30 @@ flowchart TB
     end
 
     AD --> RQ
-    ID --> RQ
-    RP -. consume eventos cross-team .-> RQ
+    RP -. consume lecturas 02/04/05/07/08/10 .-> RQ
     EU <-->|consulta ubicación de instancias| GW
-    EU <-. registra .- ID
     EU <-. registra .- AD
     EU <-. registra .- RP
-    EU <-. registra .- AU
 ```
 
 ## Componentes
 
 | Componente | Rol |
 |---|---|
-| **API Gateway** | Punto de entrada único: routing, JWT, **rate limiting (429 con `Retry-After`)**, correlation ID, CORS, errores uniformes. Sin lógica de negocio. |
-| **Eureka** | Service Discovery: los servicios se registran al iniciar y el **Gateway consulta** la ubicación de la instancia activa antes de enrutar. Health checks. |
+| **API Gateway** | **De plataforma (Tema 01)**: única puerta, JWT, rate limiting (429 con `Retry-After`), correlation ID. **Toda llamada síncrona entre servicios pasa por acá.** |
+| **Eureka** | Service Discovery: los servicios se registran al iniciar y el Gateway consulta la ubicación de la instancia activa. |
 | **Config Server** | Configuración centralizada no sensible; perfiles por ambiente. |
-| **Kafka** | Eventos de dominio, desacople, read models. Replay para auditoría y Reporting. |
-| **4 microservicios** | Ver página [Microservicios](/backend/arquitectura/microservicios). |
+| **Kafka** | Eventos de dominio, read models. Replay para Reporting. |
+| **2 microservicios** | Ver página [Microservicios](/backend/arquitectura/microservicios). |
 
 ## Principios clave
 
-- **Autorización distribuida:** el Gateway valida el JWT, pero cada microservicio revalida identidad, rol, permisos y **alcance del recurso**.
-- **Database per Service:** sin FKs entre bases; las relaciones se modelan con IDs.
-- **Consumo de dominios ajenos:** cursos/desafíos/usuarios/gamificación/ranking/encuestas son de otros equipos; el BackOffice los **consume** vía eventos (reportes/métricas).
-- **Outbox + idempotencia** para eventos.
+- **Consumidor puro:** el Backoffice no es dueño de identidad, cohorte, desafíos ni economía; consume/lee por **contratos de lectura** (Temas 02/04/05/07/08/10).
+- **Sync por el gateway:** no hay comunicación directa entre microservicios (regla no negociable).
+- **Validar ≠ autorizar:** el gateway valida el token; la autorización la toma el servicio dueño de la regla.
+- **Database per Service** y **Outbox + idempotencia** para eventos.
 - **Correlation ID** en todo el recorrido.
 
 ## Alcance por dato (reportes/métricas)
 
-El alcance del PROFESOR sobre un curso se valida contra la **membresía real** provista por el dominio de cursos (cross-team); el `course_id` del request nunca se acepta ciegamente.
+El alcance del PROFESOR sobre una cohorte se valida contra la **matrícula del Tema 02** (cross-team); el `course_id` del request nunca se acepta ciegamente.
