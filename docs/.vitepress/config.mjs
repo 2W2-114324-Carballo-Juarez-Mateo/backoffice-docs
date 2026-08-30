@@ -87,6 +87,17 @@ export default withMermaid({
         items: [
           { text: 'Portada MSII', link: '/msii/' },
           { text: 'Planificación y dimensionamiento', link: '/msii/planificacion' },
+          {
+            text: 'Tareas (Must)',
+            items: [
+              { text: 'Índice de tareas', link: '/msii/tareas/' },
+              { text: '1. Administración de plataforma', link: '/msii/tareas/administracion-plataforma' },
+              { text: '2. Registro de parámetros PAR-01..24', link: '/msii/tareas/registro-parametros' },
+              { text: '3. Gestión del proveedor LLM', link: '/msii/tareas/proveedor-llm' },
+              { text: '4. Contratos de lectura (6 temas)', link: '/msii/tareas/contratos-lectura' },
+              { text: '5. Reportes docentes', link: '/msii/tareas/reportes-docentes' }
+            ]
+          },
           { text: 'Requerimientos funcionales', link: '/msii/requerimientos-funcionales' },
           { text: 'Requerimientos no funcionales', link: '/msii/requerimientos-no-funcionales' },
           { text: 'Trazabilidad RF → servicio', link: '/msii/trazabilidad' }

@@ -5,13 +5,15 @@
 
 ## 🟢 Must — Núcleo (pedido para empezar · sprint 1)
 
+> Propuestas completas: [Índice de tareas](/msii/tareas/).
+
 | Ítem | RF | Subtareas | Talla | Dependencia |
 |---|---|---|---|---|
-| **Administración de plataforma** | RF-CFG-01/05 | Operativa de ADMIN sobre configuración y proveedores · consumo de auth/roles (Tema 01) · permisos de endpoints | **M** | T01 |
-| **Registro de parámetros PAR-01..24** | RF-CFG-04/06 | CRUD `GlobalParameter` · versionado · hacia adelante (RF-CFG-06) · evento `GlobalConfigurationChanged` · validación ADMIN | **M** | Temas 03/05/08/10 la leen |
-| **Gestión del proveedor LLM (exclusiva ADMIN)** | RF-IA-ADM-01..07 | CRUD proveedores · asignación modelo↔función · evaluador único · golden set + calibración · detección de deriva · evento `ModelProviderChanged` · auditoría emitida a T01 | **L** | T07 consume |
-| **Contratos de lectura con los 6 temas** | RF-RPT-10 | Acordar contratos (02/04/05/07/08/10) · suscripción a eventos · adapters de lectura · read models base | **L** | Temas 02/04/05/07/08/10 |
-| **Reportes docentes** | RF-RPT-01 | Read models por cohorte · endpoints de reporte · autorización por matrícula (T02) | **M** | Contratos de lectura |
+| [**Administración de plataforma**](/msii/tareas/administracion-plataforma) | RF-CFG-01/05 | Operativa de ADMIN sobre configuración y proveedores · consumo de auth/roles (Tema 01) · permisos de endpoints | **M** | T01 |
+| [**Registro de parámetros PAR-01..24**](/msii/tareas/registro-parametros) | RF-CFG-04/06 | CRUD `GlobalParameter` · versionado · hacia adelante (RF-CFG-06) · evento `GlobalConfigurationChanged` · validación ADMIN | **M** | Temas 03/05/08/10 la leen |
+| [**Gestión del proveedor LLM (exclusiva ADMIN)**](/msii/tareas/proveedor-llm) | RF-IA-ADM-01..07 | CRUD proveedores · asignación modelo↔función · evaluador único · golden set + calibración · detección de deriva · evento `ModelProviderChanged` · auditoría emitida a T01 | **L** | T07 consume |
+| [**Contratos de lectura con los 6 temas**](/msii/tareas/contratos-lectura) | RF-RPT-10 | Acordar contratos (02/04/05/07/08/10) · suscripción a eventos · adapters de lectura · read models base | **L** | Temas 02/04/05/07/08/10 |
+| [**Reportes docentes**](/msii/tareas/reportes-docentes) | RF-RPT-01 | Read models por cohorte · endpoints de reporte · autorización por matrícula (T02) | **M** | Contratos de lectura |
 
 ## 🟡 Should — Para más adelante (diseñado ahora, implementado después)
 
