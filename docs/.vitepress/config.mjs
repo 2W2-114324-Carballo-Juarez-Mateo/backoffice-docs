@@ -86,6 +86,7 @@ export default withMermaid({
         collapsed: false,
         items: [
           { text: 'Portada MSII', link: '/msii/' },
+          { text: 'Planificación y dimensionamiento', link: '/msii/planificacion' },
           { text: 'Requerimientos funcionales', link: '/msii/requerimientos-funcionales' },
           { text: 'Requerimientos no funcionales', link: '/msii/requerimientos-no-funcionales' },
           { text: 'Trazabilidad RF → servicio', link: '/msii/trazabilidad' }

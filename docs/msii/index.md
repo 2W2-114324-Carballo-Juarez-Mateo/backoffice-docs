@@ -8,6 +8,7 @@ Esta sección concentra los entregables de análisis: los **requerimientos funci
 
 | Página | Qué contiene |
 |---|---|
+| [Planificación y dimensionamiento](/msii/planificacion) | Tareas asignadas en Must/Should/Could (MoSCoW) dimensionadas en T-shirt S/M/L |
 | [Requerimientos Funcionales](/msii/requerimientos-funcionales) | RF con IDs del PRD (`RF-ÁREA-NN`) por dominio |
 | [Requerimientos No Funcionales](/msii/requerimientos-no-funcionales) | RNF + stack técnico |
 | [Trazabilidad RF → servicio](/msii/trazabilidad) | Matriz requerimiento → microservicio + Definition of Done |
