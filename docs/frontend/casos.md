@@ -1,6 +1,6 @@
 # Frontend — Casos A/B (postura del grupo)
 
-> Consigna de docentes: investigar y defender una alternativa para la arquitectura frontend de la plataforma. **Postura del grupo: Caso A.** Detalle completo en `frontend_arquitectura_analisis.md`.
+> Consigna de docentes: investigar y defender una alternativa para la arquitectura frontend de la plataforma. **Postura del grupo: Caso A.** Detalle completo en `frontend_arquitectura_analisis.md`. El plan de despliegue del BackOffice (Nginx + BFF + Docker 2 etapas) está en [Arquitectura y despliegue](/frontend/arquitectura-despliegue).
 
 ## Los dos casos
 

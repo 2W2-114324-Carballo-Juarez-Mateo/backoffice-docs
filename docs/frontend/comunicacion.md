@@ -1,6 +1,6 @@
 # Frontend — Plan de Comunicación (Caso A)
 
-> Postura confirmada: **Caso A** (apps Angular SSR por dominio + Nginx). Plan con decisiones; detalle en `frontend_plan_comunicacion.md`.
+> Postura confirmada: **Caso A** (apps Angular SSR por dominio + Nginx). Plan con decisiones; detalle en `frontend_plan_comunicacion.md`. Arquitectura y despliegue del BackOffice: ver [Arquitectura y despliegue](/frontend/arquitectura-despliegue).
 
 ## Decisiones base
 
