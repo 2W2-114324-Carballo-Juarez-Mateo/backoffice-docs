@@ -12,11 +12,11 @@
 **Motivo:** evitar acoplamiento mediante base compartida.
 **Consecuencia:** no hay transacciones distribuidas simples; se usa API/eventos.
 
-## ADR-003 — Apache Kafka (broker de eventos)
+## ADR-003 — RabbitMQ (broker de eventos)
 
-**Decisión:** **Apache Kafka** como broker de eventos (decisión inicial; RabbitMQ queda como alternativa).
+**Decisión:** **RabbitMQ** como broker de eventos, con patrón **híbrido** (REST por el gateway + eventos por RabbitMQ) y **caché local con TTL 10 min** en consumidores de configuración. Apache **Kafka** documentado como alternativa.
 
-**Motivo:** comunicación asíncrona, desacoplamiento, **replay** (read models de Reporting + auditoría inmutable RF-AUD-04), **orden por partición** (`courseId`/tenant) y escalabilidad. Patrones de confiabilidad: Outbox + at-least-once + idempotencia.
+**Motivo:** comunicación asíncrona, desacoplamiento, liviano y simple de operar para la escala, soporte maduro con Spring AMQP, y adecuado al broadcast de configuración (exchange + cola por consumidor). Kafka (replay, orden por partición) no es necesario porque los read models de Reporting se reconstruyen vía contratos de lectura REST. Patrones de confiabilidad: Outbox + at-least-once + idempotencia por `event_id` y `version`.
 
 ## ADR-004 — Outbox
 

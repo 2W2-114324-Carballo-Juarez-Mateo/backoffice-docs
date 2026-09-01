@@ -16,7 +16,7 @@ flowchart TB
     subgraph INFRA[Infraestructura]
         EU[Eureka · Discovery]
         CFG[Config Server]
-        RQ[Kafka · Event Broker]
+        RQ[RabbitMQ · Event Broker]
     end
 
     AD --> RQ
@@ -33,7 +33,7 @@ flowchart TB
 | **API Gateway** | **De plataforma (Tema 01)**: única puerta, JWT, rate limiting (429 con `Retry-After`), correlation ID. **Toda llamada síncrona entre servicios pasa por acá.** |
 | **Eureka** | Service Discovery: los servicios se registran al iniciar y el Gateway consulta la ubicación de la instancia activa. |
 | **Config Server** | Configuración centralizada no sensible; perfiles por ambiente. |
-| **Kafka** | Eventos de dominio, read models. Replay para Reporting. |
+| **RabbitMQ** | Eventos de dominio, read models. Read models (reporting) reconstruidos vía contratos de lectura. |
 | **2 microservicios** | Ver página [Microservicios](/backend/arquitectura/microservicios). |
 
 ## Principios clave

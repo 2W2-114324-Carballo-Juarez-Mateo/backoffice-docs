@@ -59,7 +59,7 @@ ConfigurationSnapshot   ← GlobalConfigurationChanged
 ModelProviderSnapshot   ← cambios de proveedores/modelos
 ```
 
-Reconstruibles por **replay** de Kafka. **Frescura ≤ 15 min.**
+Reconstruibles vía **contratos de lectura (REST)** desde los dominios dueños. **Frescura ≤ 15 min.**
 
 ## 4. Auditoría — persistida por el Tema 01
 

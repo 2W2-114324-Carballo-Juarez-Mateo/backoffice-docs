@@ -15,19 +15,19 @@ RF-RPT-10 · RF-REP-01/03 · regla "cada entidad tiene un único dueño".
 ## 4. Diseño técnico
 - **Arquitectura:** `reporting-service`, Clean Architecture.
 - **Patrón:** Adapter (un cliente por tema, aisla el contrato) + Consumer idempotente (Outbox/`event_id`).
-- **Comunicación:** asíncrona por Kafka (temas publican, Reporting consume con su consumer group) y síncrona por el gateway cuando haga falta (ej. pertenencia a cohorte → T02).
+- **Comunicación:** asíncrona por RabbitMQ (temas publican, Reporting consume con su cola) y síncrona por el gateway cuando haga falta (ej. pertenencia a cohorte → T02).
 - **Frescura:** los read models se actualizan vía eventos (base para la Should de frescura ≤15 min).
 - **Contrato:** envelope estándar `{eventId, eventType, occurredAt, correlationId, actorId, source, payload}` + `ProcessedEvent` para idempotencia.
 
 ```mermaid
 sequenceDiagram
     participant T as Temas 02/04/05/07/08/10
-    participant K as Kafka
+    participant K as RabbitMQ
     participant RP as Reporting & Analytics
     participant DB as reporting_db
 
     T->>K: eventos de dominio (course/encuestas/prácticas/evaluación/banco/roadmap)
-    K->>RP: consume (consumer group: reporting)
+    K->>RP: consume (cola: reporting)
     RP->>RP: idempotencia (event_id) + adapter por tema
     RP->>DB: actualiza read models
 ```
@@ -54,12 +54,12 @@ Read models en `reporting_db`: `CohortMetricsSnapshot`, `TeacherReportSnapshot`,
 | Paso | Subtarea | Días |
 |---|---|---|
 | 1 | Acuerdo de contratos con los 6 temas (sesión de integración) + definición de topics | 2 |
-| 2 | Suscripción + consumer groups + idempotencia | 2 |
+| 2 | Suscripción + colas + idempotencia | 2 |
 | 3 | Adapters por tema + read models base | 2.5 |
 | 4 | Contract testing del envelope + tests | 0.5 |
 
 ## 9. Pruebas
-Integración (Testcontainers Kafka) · contract testing de eventos (productor↔consumidor) · multitenancy por `course_id`.
+Integración (Testcontainers RabbitMQ) · contract testing de eventos (productor↔consumidor) · multitenancy por `course_id`.
 
 ## 10. Criterios de aceptación (DoD)
 - [ ] Contratos acordados y documentados (topics + payloads versionados).

@@ -28,7 +28,8 @@
 |---|---|
 | RNF-05 | Soportar **120 sesiones concurrentes** (objetivo PRD), sin cuello de botella en operaciones administrativas. |
 | RNF-06 | Resiliencia: timeouts, retry controlado, circuit breaker; operaciones asíncronas reintentables sin duplicar efectos. |
-| RNF-07 | Idempotencia: operaciones críticas idempotentes; consumidores toleran duplicados (event_id). |
+| RNF-07 | Idempotencia: operaciones críticas idempotentes; consumidores toleran duplicados (event_id y versión). |
+| RNF-13 | Mensajería híbrida: cambios de configuración se propagan por eventos RabbitMQ (exchange + cola por consumidor) con **caché local TTL 10 min** en los consumidores; si el evento no llega, el TTL es el respaldo, y si el Backoffice cae se sirve el último valor conocido. |
 
 ## Trazabilidad y observabilidad
 
@@ -56,7 +57,7 @@
 | Gateway | Spring Cloud Gateway |
 | Discovery | Eureka |
 | Config | Spring Cloud Config Server |
-| Mensajería | Apache Kafka + Outbox (RabbitMQ = alternativa) |
+| Mensajería | RabbitMQ + Outbox (Kafka = alternativa) |
 | Persistencia | JPA/Hibernate · PostgreSQL (recomendada) |
 | API docs | springdoc / OpenAPI 3 |
 | Seguridad | Spring Security + JWT (jjwt) + 2FA (TOTP) |

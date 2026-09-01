@@ -45,21 +45,21 @@ sequenceDiagram
     GW-->>B: respuesta
 ```
 
-## Asíncrona — Eventos Apache Kafka
+## Asíncrona — Eventos RabbitMQ
 
-Para procesos desacoplados: auditoría, read models, propagación de cambios. **Kafka** es el broker elegido (ADR-003); RabbitMQ queda como alternativa.
+Para procesos desacoplados: auditoría, read models, propagación de cambios. **RabbitMQ** es el broker elegido (ADR-003); Apache **Kafka** queda como alternativa. Patrón **híbrido**: REST por el gateway para lo síncrono + eventos por RabbitMQ para avisar, con **caché local con TTL** en los consumidores.
 
 **Publicación (BackOffice):**
 
 ```mermaid
 sequenceDiagram
     participant AD as Administration Service
-    participant K as Kafka (topic: administration.events)
+    participant K as RabbitMQ (exchange: administration.events)
     participant T01 as Tema 01 (auditoría)
-    participant GS as Gamification (cross-team)
+    participant GS as Gamification (cola: gamification)
 
     AD->>AD: persistir + escribir Outbox (misma transacción)
-    AD->>K: GlobalConfigurationChanged (partición por key)
+    AD->>K: GlobalConfigurationChanged (routing key por parámetro)
     K->>T01: persiste auditoría
     K->>GS: Gamification aplica hacia adelante (RF-CFG-06)
 ```
@@ -69,25 +69,25 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant CS as Cursos Service (equipo Cursos)
-    participant K as Kafka (topic: course.events)
-    participant RP as Reporting & Analytics (consumer group: reporting)
+    participant K as RabbitMQ (exchange: course.events)
+    participant RP as Reporting & Analytics (cola: reporting)
 
-    CS->>K: CourseArchived / RosterUpdated (por courseId)
+    CS->>K: CourseArchived / RosterUpdated
     K->>RP: actualizar read models (métricas, reportes)
 ```
 
-### Topics y particionado
+### Exchanges y colas
 
-| Topic | Eventos | Rol BackOffice | Particionado |
+| Exchange | Eventos | Rol BackOffice | Cola por consumidor |
 |---|---|---|---|
-| `identity.events` | AdminCreated, AdminDeleted, AdminRecoveryExecuted, RoleChanged | Publica | por `actorId` |
-| `administration.events` | GlobalConfigurationChanged, ModelProviderChanged, ModelFunctionChanged | Publica | por `key` |
-| `audit.events` | eventos de auditoría | Publica | por `actorId` |
-| `retention.events` | RetentionDecisionCreated, DataAnonymized | Publica | por `resourceId` |
-| `course.events` | CourseCreated/Activated/Archived, RosterUpdated | **Consume** | por `courseId` |
-| `gamification.events` / `ranking.events` / `survey.events` | eventos de otros equipos | **Consume** | por `courseId` |
+| `identity.events` | AdminCreated, AdminDeleted, AdminRecoveryExecuted, RoleChanged | Publica | `audit`, `reporting`… |
+| `administration.events` | GlobalConfigurationChanged, ModelProviderChanged, ModelFunctionChanged | Publica | `gamification`, `challenges`, `bank`, `roadmap`… |
+| `audit.events` | eventos de auditoría | Publica | `audit` |
+| `retention.events` | RetentionDecisionCreated, DataAnonymized | Publica | `audit`, `reporting`… |
+| `course.events` | CourseCreated/Activated/Archived, RosterUpdated | **Consume** | `reporting` |
+| `gamification.events` / `ranking.events` / `survey.events` | eventos de otros equipos | **Consume** | `reporting` |
 
-Cada **consumer group** (un servicio) lee con su offset propio. Kafka permite **replay**: reconstruir read models de Reporting o la auditoría desde cero (clave para RF-AUD-04).
+Cada **cola** pertenece a un consumidor. **Idempotencia por `event_id` y por `version`** (descarta `v ≤ local`). Los **read models de Reporting se reconstruyen vía contratos de lectura REST** (no dependen del historial del broker). Los consumidores de parámetros usan **caché local con TTL 10 min** que el evento invalida antes (respaldo ante caída del Backoffice).
 
 ## Patrón Outbox
 
@@ -100,7 +100,7 @@ BEGIN TRANSACTION
 COMMIT
         │
         ▼
-   Publisher → Kafka (topic administration.events)
+   Publisher → RabbitMQ (exchange administration.events)
 ```
 
 ## Idempotencia en consumidores
@@ -143,7 +143,7 @@ sequenceDiagram
     participant A as ADMIN
     participant GW as Gateway de plataforma (T01)
     participant AD as Administration Service
-    participant K as Kafka
+    participant K as RabbitMQ
     participant T01 as Tema 01 (auditoría)
     participant T07 as Tema 07 (Evaluación LLM)
 
@@ -171,7 +171,7 @@ flowchart TD
     E -- Sí --> F{¿quedará al menos un ADMIN?}
     F -- No --> X
     F -- Sí --> G[Baja lógica + Outbox]
-    G --> H[Kafka → Tema 01 persiste auditoría]
+    G --> H[RabbitMQ → Tema 01 persiste auditoría]
 ```
 
 > La protección del último ADMIN debe manejarse con **transacción y revalidación** (concurrencia), no solo con validación previa.

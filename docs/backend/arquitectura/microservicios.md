@@ -25,7 +25,7 @@
 - Exportación de datos (CSV/PDF) y **alertas configurables**.
 - **Frescura ≤ 15 minutos** en read models; **sin comparación entre docentes**.
 - Consume **contratos de lectura** de los temas 02/04/05/07/08/10 (eventos/APIs por el gateway).
-- **Base:** `reporting_db` (read models reconstruibles por replay de Kafka).
+- **Base:** `reporting_db` (read models reconstruibles por contratos de lectura (REST)).
 
 ## Consumidos (no implementados)
 

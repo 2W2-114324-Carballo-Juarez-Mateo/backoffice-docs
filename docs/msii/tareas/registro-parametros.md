@@ -18,13 +18,14 @@ RF-CFG-04 (economía global, solo ADMIN), RF-CFG-05 (ámbitos), RF-CFG-06 (hacia
 - **Versionado:** columna `version`; cada cambio crea una versión; el valor es JSON (`jsonb`) → extensible a cualquier parámetro.
 - **Consistencia:** cambio + `OutboxMessage` en la misma transacción (Unit of Work) → evento `GlobalConfigurationChanged` (envelope estándar) consumido por Temas 03/05/08/10.
 - **Idempotencia:** `Idempotency-Key` en PUT para evitar duplicados.
+- **Propagación híbrida (RabbitMQ + caché):** cambio + `OutboxMessage` en la misma transacción → `GlobalConfigurationChanged` por el exchange `administration.events`; cada consumidor (Temas 03/05/08/10) mantiene **caché local con TTL 10 min** (versión + valor) que el evento invalida antes; respaldo ante caída del Backoffice (sirve el último valor conocido).
 
 ```mermaid
 sequenceDiagram
     participant A as ADMIN
     participant GW as Gateway (T01)
     participant AD as Administration Service
-    participant K as Kafka (administration.events)
+    participant K as RabbitMQ (administration.events)
     participant T as Temas 03/05/08/10
 
     A->>GW: PUT /api/administration/parameters/PAR-01
@@ -68,7 +69,7 @@ Migración Flyway `V1__global_parameter.sql`.
 | 4 | Evento `GlobalConfigurationChanged` + Outbox + tests | 1 |
 
 ## 9. Pruebas
-Unitarias (versionado, hacia adelante, permisos) · integración (Testcontainers: persistencia + Kafka publish + Outbox).
+Unitarias (versionado, hacia adelante, permisos) · integración (Testcontainers: persistencia + RabbitMQ publish + Outbox).
 
 ## 10. Criterios de aceptación (DoD)
 - [ ] CRUD de parámetros funcional; PUT incrementa versión.

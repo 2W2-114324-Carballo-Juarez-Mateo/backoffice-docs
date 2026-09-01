@@ -16,7 +16,7 @@ hero:
 features:
   - icon: ⚙️
     title: Backend
-    details: "Back del módulo BackOffice — Java 21 · Spring Boot · Microservicios · Kafka. ✓ Documentado"
+    details: "Back del módulo BackOffice — Java 21 · Spring Boot · Microservicios · RabbitMQ. ✓ Documentado"
     link: /backend/
     linkText: Abrir Backend
   - icon: 🎨

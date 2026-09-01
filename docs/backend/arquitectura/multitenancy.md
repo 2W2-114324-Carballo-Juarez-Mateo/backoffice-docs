@@ -54,7 +54,42 @@ CREATE POLICY tenant_isolation ON cohort_metrics_snapshot
 
 > **Importante:** RLS **no reemplaza la autorización** (*validar ≠ autorizar*). RLS filtra filas dentro de un tenant ya autorizado; la pertenencia a la cohorte se sigue validando en la aplicación (T02).
 
-## 5. Convención multitenancy de plataforma (para coordinar con otros equipos)
+## 5. Caso ADMIN: vistas entre cursos (globales)
+
+El **ADMIN** (rol validado en T01) necesita dos alcances sobre el reporting:
+
+| Alcance | `app.current_course` | Qué ve |
+|---|---|---|
+| **Puntual** | `course_id` específico | Un curso en particular (mismo camino que un PROFESOR, RLS normal). |
+| **Global** | `'ALL'` (centinela) | Todos los cursos: panel general, comparativas, reportes globales. |
+
+**Mecanismo (sin apagar RLS):** el `TenantContext` setea `app.current_course = 'ALL'` **solo cuando la aplicación autorizó** al ADMIN (o a un rol/permiso explícito `REPORTS_VIEW_ALL`) a operar entre cursos. La política RLS contempla el centinela:
+
+```sql
+CREATE POLICY tenant_isolation ON cohort_metrics_snapshot
+  USING (
+    course_id = current_setting('app.current_course')::uuid
+    OR current_setting('app.current_course') = 'ALL'
+  );
+```
+
+**Reglas:**
+
+- **Nunca se usa `BYPASSRLS`** ni se desactiva RLS: la base sigue filtrando; el "todo" es un valor explícito, no un agujero.
+- **Quién puede setear `'ALL'` lo decide la aplicación** (rol ADMIN desde el token validado), **nunca el request**: un PROFESOR que intente `course_id='ALL'` recibe `403` porque el `TenantContext` no lo autoriza (la pertenencia T02 no cubre "todos").
+- **Auditoría:** las lecturas con alcance global se auditan (actor, fecha, recurso) — trazabilidad RF-AUD-*.
+
+**Pruebas de aislamiento (obligatorias):**
+
+```text
+PROFESOR A → GET /reports/courses/{cohorteA}/metrics      → 200 (su cohorte)
+PROFESOR A → GET /reports/courses/{cohorteB}/metrics      → 403 (otra cohorte)
+PROFESOR A → intento con alcance ALL                       → 403 (no autorizado)
+ADMIN     → GET /reports/courses/{cualquierCohorte}/metrics → 200
+ADMIN     → GET /reports/panel (alcance ALL)               → 200 (todos los cursos)
+```
+
+## 6. Convención multitenancy de plataforma (para coordinar con otros equipos)
 
 Para que toda la plataforma aplique lo mismo, esta convención se propone a los demás grupos en la sesión de integración:
 
@@ -71,7 +106,7 @@ PROFESOR A → GET /reports/courses/{cohorteA}/metrics → 200 (su cohorte)
 PROFESOR A → GET /reports/courses/{cohorteB}/metrics → 403 (otra cohorte)
 ```
 
-## 6. Alternativas descartadas
+## 7. Alternativas descartadas
 
 | Enfoque | Por qué NO |
 |---|---|

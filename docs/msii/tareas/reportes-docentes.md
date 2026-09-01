@@ -15,7 +15,7 @@ RF-RPT-01 · RF-REP-02/03 · RF-RPT-08 (no exposición fuera de ámbito).
 ## 4. Diseño técnico
 - **Arquitectura:** `reporting-service`, Clean Architecture; CQRS (lectura por query/handler).
 - **Autorización:** el alcance del PROFESOR se valida contra la **matrícula del T02** (cross-team, por el gateway); *validar ≠ autorizar*.
-- **Datos:** read models (`TeacherReportSnapshot`, `CohortMetricsSnapshot`) reconstruidos por replay de Kafka.
+- **Datos:** read models (`TeacherReportSnapshot`, `CohortMetricsSnapshot`) reconstruidos por contratos de lectura (REST).
 - **Observabilidad:** correlation ID, logs; **sin comparación entre docentes** (cada docente ve solo sus cohortes).
 
 ```mermaid
@@ -51,7 +51,7 @@ Read models en `reporting_db`: `TeacherReportSnapshot` (course_id, teacher_id, r
 - PROFESOR solo ve sus cohortes (matrícula T02).
 - **Sin comparación entre docentes** (no se expone ranking/cruce entre docentes).
 - Solo agregados; encuestas anónimas (RF-ENC-04/12) cuando el reporte las incluya.
-- **Multitenancy (TenantContext + RLS):** los read models se acotan por `course_id` (tenant = curso-cohorte); el `TenantContext` setea `app.current_course` desde el contexto validado y **nunca confía en el `course_id` del request**; **RLS** de PostgreSQL refuerza el aislamiento a nivel de base (no reemplaza la autorización).
+- **Multitenancy (TenantContext + RLS):** los read models se acotan por `course_id` (tenant = curso-cohorte); el `TenantContext` setea `app.current_course` desde el contexto validado y **nunca confía en el `course_id` del request**; **RLS** de PostgreSQL refuerza el aislamiento a nivel de base (no reemplaza la autorización). **ADMIN** con alcance puntual (un curso) o **global** (`app.current_course='ALL'`, panel y comparativas — autorizado por rol, sin `BYPASSRLS`).
 
 ## 8. Plan de implementación
 | Paso | Subtarea | Días |
