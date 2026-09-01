@@ -51,6 +51,7 @@ Read models en `reporting_db`: `TeacherReportSnapshot` (course_id, teacher_id, r
 - PROFESOR solo ve sus cohortes (matrícula T02).
 - **Sin comparación entre docentes** (no se expone ranking/cruce entre docentes).
 - Solo agregados; encuestas anónimas (RF-ENC-04/12) cuando el reporte las incluya.
+- **Multitenancy (TenantContext + RLS):** los read models se acotan por `course_id` (tenant = curso-cohorte); el `TenantContext` setea `app.current_course` desde el contexto validado y **nunca confía en el `course_id` del request**; **RLS** de PostgreSQL refuerza el aislamiento a nivel de base (no reemplaza la autorización).
 
 ## 8. Plan de implementación
 | Paso | Subtarea | Días |
@@ -61,7 +62,7 @@ Read models en `reporting_db`: `TeacherReportSnapshot` (course_id, teacher_id, r
 | 4 | Tests + Swagger | 1 |
 
 ## 9. Pruebas
-Unitarias (alcance, agregación) · integración (MockMvc + Testcontainers, matrícula T02 mockeada) · multitenancy por `course_id`.
+Unitarias (alcance, agregación) · integración (MockMvc + Testcontainers, matrícula T02 mockeada) · **multitenancy obligatorio: PROFESOR A → cohorte A → 200; PROFESOR A → cohorte B → 403** (+ verificación de RLS en la base).
 
 ## 10. Criterios de aceptación (DoD)
 - [ ] PROFESOR ve solo sus cohortes (403 si no pertenece).
