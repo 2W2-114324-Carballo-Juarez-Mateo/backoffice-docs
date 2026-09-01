@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
   scenario: { type: Object, required: true }
@@ -17,6 +17,8 @@ const BANDS = {
 
 const stepIndex = ref(0)
 const playing = ref(false)
+const root = ref(null)
+const fsActive = ref(false)
 let timer = null
 
 const layers = computed(() => props.scenario.layers)
@@ -70,11 +72,28 @@ function togglePlay() {
   }
 }
 
-onBeforeUnmount(() => clearInterval(timer))
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    root.value?.requestFullscreen?.()
+  } else {
+    document.exitFullscreen()
+  }
+}
+
+function onFsChange() {
+  fsActive.value = !!document.fullscreenElement
+}
+
+onMounted(() => document.addEventListener('fullscreenchange', onFsChange))
+onBeforeUnmount(() => {
+  clearInterval(timer)
+  document.removeEventListener('fullscreenchange', onFsChange)
+  if (document.fullscreenElement) document.exitFullscreen()
+})
 </script>
 
 <template>
-  <div class="fp">
+  <div ref="root" class="fp">
     <div class="fp-player">
       <svg class="fp-svg" :viewBox="`0 0 ${W} ${H}`" role="img" :aria-label="scenario.title">
         <defs>
@@ -116,6 +135,20 @@ onBeforeUnmount(() => clearInterval(timer))
         <div class="fp-progress">
           <span class="fp-dot" v-for="(s, i) in steps" :key="i" :class="{ 'is-active': i === stepIndex, 'is-done': i < stepIndex }" @click="go(i)" :title="`Paso ${i + 1}`"></span>
         </div>
+        <button class="fp-btn fp-btn-fs" @click="toggleFullscreen" :aria-label="fsActive ? 'Salir de pantalla completa' : 'Pantalla completa'" :title="fsActive ? 'Salir de pantalla completa' : 'Pantalla completa'">
+          <svg v-if="!fsActive" class="fp-fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+            <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+            <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+            <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+          </svg>
+          <svg v-else class="fp-fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3"></path>
+            <path d="M21 8h-3a2 2 0 0 1-2-2V3"></path>
+            <path d="M3 16h3a2 2 0 0 1 2 2v3"></path>
+            <path d="M16 21v-3a2 2 0 0 1 2-2h3"></path>
+          </svg>
+        </button>
         <span class="fp-stepno">{{ stepIndex + 1 }} / {{ steps.length }}</span>
       </div>
 
@@ -273,6 +306,98 @@ onBeforeUnmount(() => clearInterval(timer))
   font-size: 12px;
   color: var(--vp-c-text-2);
   margin-left: auto;
+}
+.fp-btn-fs {
+  margin-left: 4px;
+  color: var(--vp-c-text-2);
+}
+.fp-fs-icon {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+
+/* Pantalla completa */
+.fp:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 28px 24px;
+  background: var(--vp-c-bg);
+  overflow: auto;
+  box-sizing: border-box;
+}
+.fp:fullscreen .fp-player {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.fp:fullscreen .fp-svg {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: auto;
+}
+.fp:fullscreen .fp-controls {
+  margin-top: 12px;
+}
+.fp:fullscreen .fp-btn {
+  width: 38px;
+  height: 38px;
+  font-size: 16px;
+}
+.fp:fullscreen .fp-btn-fs {
+  width: 38px;
+  height: 38px;
+}
+.fp:fullscreen .fp-dot {
+  width: 12px;
+  height: 12px;
+}
+.fp:fullscreen .fp-stepno {
+  font-size: 14px;
+}
+.fp:fullscreen .fp-step {
+  margin-top: 12px;
+  padding: 16px 20px;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.fp:fullscreen .fp-entities {
+  margin-top: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.fp:fullscreen .fp-entity {
+  font-size: 14px;
+}
+.fp:fullscreen .fp-entities-title {
+  font-size: 13px;
+}
+
+/* Escalar nodos y textos dentro del SVG en pantalla completa */
+.fp:fullscreen .fp-node-rect {
+  stroke-width: 2;
+}
+.fp:fullscreen .fp-node-label {
+  font-size: 15px;
+}
+.fp:fullscreen .fp-node-note {
+  font-size: 11px;
+}
+.fp:fullscreen .fp-edge {
+  stroke-width: 2.2;
+}
+.fp:fullscreen .fp-edge.is-active {
+  stroke-width: 3.4;
+}
+.fp:fullscreen .fp-edge-label {
+  font-size: 12px;
+}
+.fp:fullscreen .fp-band-label {
+  font-size: 16px;
 }
 .fp-step {
   margin-top: 10px;
