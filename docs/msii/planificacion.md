@@ -38,3 +38,5 @@
 - **Pedido para empezar** = lo que otros equipos necesitan para no quedar bloqueados (los **contratos de lectura** son dependencia crítica del sprint 1: *"sin contratos de lectura acordados en el sprint 1 no hay nada demostrable"*).
 - **Para más adelante** = se prevé en el modelo y el contrato desde el inicio, aunque se implemente después.
 - **Podría ser** = un extra a medias vale menos que un núcleo terminado.
+
+> **Transversal:** la **multitenancy (tenant = curso-cohorte + RLS)** se incorpora desde el diseño en las tareas de Reporting (4 y 5) y como RNF (RNF-04b/04c); ver [Multitenancy y RLS](/backend/arquitectura/multitenancy).

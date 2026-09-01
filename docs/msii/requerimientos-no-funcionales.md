@@ -16,6 +16,8 @@
 | ID | Requisito |
 |---|---|
 | RNF-04 | **Database per Service**: cada microservicio es dueño de su base; comunicación solo por API/eventos. |
+| **RNF-04b** | **Multitenancy lógico: tenant = curso-cohorte (`course_id`)** — Reporting tenant-scoped por `course_id`; Administration global a propósito (PAR/proveedores valen igual en todos los cursos). |
+| **RNF-04c** | **RLS (Row-Level Security) de PostgreSQL como refuerzo**: la base filtra por tenant (`current_setting('app.current_course')`); ningún query cruza tenant a nivel DB. RLS **no reemplaza** la autorización (*validar ≠ autorizar*). |
 | RNF-10 | Borrado lógico en entidades de producción académica. |
 | RNF-11 | Retención: 5 años, preaviso 90 días, sin purga automática, decisión auditada de ADMIN. |
 | RNF-12 | Privacidad: encuestas anónimas por diseño; sin vínculo autor ↔ respuesta. |

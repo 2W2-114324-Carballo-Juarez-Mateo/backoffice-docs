@@ -11,6 +11,7 @@
 | RF-CUR-* (cohorte) · matrícula | **Tema 02** (consumidos) |
 | RF-DES-*, RF-IA-* producto, gamificación, ranking, chat, encuestas | Temas 03-11 (solo lectura 02/04/05/07/08/10) |
 | RNF seguridad | Gateway (Tema 01) + servicios |
+| RNF-04b/04c **multitenancy + RLS** | Reporting & Analytics (tenant-scoped) + Administration (global a propósito) · TenantContext + RLS |
 | RNF observabilidad / escalabilidad / idempotencia | Todos |
 
 ## Trazabilidad de flujos críticos
@@ -42,7 +43,19 @@ RF-RPT-01..10
     ↓
 Reporting & Analytics Service
     ├── consume lecturas de los temas 02/04/05/07/08/10 (frescura ≤ 15 min)
-    └── read models agregados (CSAT, engagement, alumno en riesgo) + exportación
+    ├── read models agregados (CSAT, engagement, alumno en riesgo) + exportación
+    └── multitenancy: tenant-scoped por course_id (TenantContext) + RLS (defensa en profundidad)
+```
+
+### Multitenancy (transversal)
+
+```text
+RNF-04b/04c
+    ↓
+TenantContext (course_id + pertenencia vía T02)
+    ├── Reporting → read models acotados por course_id (PROFESOR → sus cohortes)
+    ├── RLS → filtro por tenant a nivel DB (app.current_course)
+    └── Administration → global a propósito (PAR/proveedores)
 ```
 
 ## Definition of Done (Backoffice)
