@@ -1,9 +1,21 @@
-/* Posicionar el menú "Descargar SDD" a la izquierda del toggle oscuro/claro.
+/* Posicionar los botones personalizados ("Flujos" y "Descargar SDD") a la
+   izquierda del toggle oscuro/claro.
    El slot nav-bar-content-after se renderiza después del toggle (appearance);
    se reordena con flex order en .content-body. */
+
 @media (min-width: 768px) {
-  .VPNavBar .content-body .sdd-nav-item {
+  .VPNavBar .content-body .header-custom-actions {
+    display: flex;
+    align-items: center;
     order: 4;
+  }
+  .VPNavBar .content-body .sdd-nav-item {
+    order: 1;
+    margin-left: 8px;
+  }
+  .VPNavBar .content-body .interactive-nav-item {
+    order: 2;
+    margin-left: 0;
   }
   .VPNavBar .content-body .appearance {
     order: 5;

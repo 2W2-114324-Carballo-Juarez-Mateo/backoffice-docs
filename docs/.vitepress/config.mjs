@@ -41,6 +41,7 @@ export default withMermaid({
         ]
       },
       { text: 'Frontend', link: '/frontend/' },
+      { text: 'Interactivo', link: '/interactivo/' },
       { text: 'MSII', link: '/msii/' }
     ],
 
@@ -106,6 +107,17 @@ export default withMermaid({
           { text: 'Requerimientos funcionales', link: '/msii/requerimientos-funcionales' },
           { text: 'Requerimientos no funcionales', link: '/msii/requerimientos-no-funcionales' },
           { text: 'Trazabilidad RF → servicio', link: '/msii/trazabilidad' }
+        ]
+      },
+      {
+        text: 'Interactivo',
+        collapsed: false,
+        items: [
+          { text: 'Flujos del BackOffice', link: '/interactivo/' },
+          { text: 'Cambio de configuración (PAR)', link: '/interactivo/flujo-config' },
+          { text: 'Multitenancy + RLS', link: '/interactivo/multitenancy-rls' },
+          { text: 'Login y sesión', link: '/interactivo/login' },
+          { text: 'Despliegue del Frontend', link: '/interactivo/despliegue' }
         ]
       }
     ],
