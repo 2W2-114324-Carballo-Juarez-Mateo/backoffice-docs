@@ -24,7 +24,7 @@ sequenceDiagram
     participant A as ADMIN
     participant GW as Gateway (T01)
     participant AD as Administration Service
-    participant K as RabbitMQ (administration.events)
+    participant K as Kafka (administration.events)
     participant T07 as Tema 07 (Evaluación LLM)
 
     A->>GW: POST /api/administration/model-providers
@@ -62,7 +62,7 @@ sequenceDiagram
 | 4 | Detección de deriva + evento `ModelProviderChanged` + auditoría + tests | 1.5 |
 
 ## 9. Pruebas
-Unitarias (exclusividad ADMIN, evaluador único, calibración) · integración (Testcontainers: persistencia + RabbitMQ + golden set) · contract del evento con T07.
+Unitarias (exclusividad ADMIN, evaluador único, calibración) · integración (Testcontainers: persistencia + Kafka + golden set) · contract del evento con T07.
 
 ## 10. Criterios de aceptación (DoD)
 - [ ] CRUD de proveedores exclusivo ADMIN y auditado.

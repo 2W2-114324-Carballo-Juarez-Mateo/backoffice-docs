@@ -4,7 +4,7 @@
 |---|---|---|
 | Complejidad de microservicios | Alto | Pocos servicios y dominios claros |
 | Saturación/abuso de endpoints administrativos (429) | Medio | Rate limiting en Gateway + Idempotency Keys |
-| Fallos de RabbitMQ | Medio | Outbox + retry |
+| Fallos de Kafka | Medio | Outbox + retry |
 | Eventos duplicados | Medio | Idempotencia (event_id) |
 | Inconsistencia eventual | Medio | Definir qué operaciones requieren respuesta síncrona |
 | Pérdida de trazabilidad | Alto | Correlation ID |

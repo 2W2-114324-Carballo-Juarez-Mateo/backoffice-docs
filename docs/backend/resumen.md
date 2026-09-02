@@ -20,7 +20,7 @@ flowchart TB
 
     E[Eureka · Discovery] -.-> GW
     CFG[Config Server] -.-> GW
-    K[RabbitMQ] <--> AD
+    K[Kafka] <--> AD
     RP -. consume lecturas 02/04/05/07/08/10 .-> K
 ```
 
@@ -48,7 +48,7 @@ flowchart TB
 | Gateway | Spring Cloud Gateway (de plataforma, Tema 01) |
 | Discovery | Eureka |
 | Config | Spring Cloud Config Server |
-| Mensajería | RabbitMQ + Outbox (Kafka = alternativa) |
+| Mensajería | Kafka + Outbox (RabbitMQ = alternativa) |
 | Persistencia | JPA/Hibernate · PostgreSQL (recomendada) |
 | API docs | springdoc / OpenAPI 3 |
 | Seguridad | Consume auth del Tema 01 (JWT + 2FA) |

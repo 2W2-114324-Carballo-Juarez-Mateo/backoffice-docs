@@ -1,24 +1,27 @@
-# Mensajería híbrida con RabbitMQ
+# Mensajería híbrida con Kafka
 
-> **Decisión:** patrón **híbrido** de comunicación — REST por el API Gateway para lo síncrono + **RabbitMQ** para eventos de configuración, con **caché local con TTL** en los consumidores. Apache **Kafka** queda documentado como alternativa.
+> **Decisión:** patrón **híbrido** de comunicación — REST por el API Gateway para lo síncrono + **Kafka** para eventos de configuración, con **caché local con TTL** en los consumidores. **RabbitMQ** queda documentado como alternativa.
 
 ## 1. Por qué un patrón híbrido
 
 En el Backoffice conviven dos tipos de necesidad de comunicación:
 
 1. **Síncrona (REST por el gateway):** consultas, operaciones y contratos de lectura que necesitan **respuesta inmediata** (ej. validar la pertenencia a una cohorte contra la matrícula T02).
-2. **Asíncrona (eventos por RabbitMQ):** **avisar** cambios de configuración global (PAR-01..24, proveedores LLM) a los consumidores, sin que la respuesta al ADMIN dependa de la propagación.
+2. **Asíncrona (eventos por Kafka):** **avisar** cambios de configuración global (PAR-01..24, proveedores LLM) a los consumidores, sin que la respuesta al ADMIN dependa de la propagación.
 
-La regla que separa ambos caminos es simple: **REST responde preguntas u operaciones; los eventos notifican cambios que otros deben conocer.** RabbitMQ **no reemplaza** al gateway ni convierte la arquitectura en event-driven: es un segundo camino, acotado, para avisar.
+La regla que separa ambos caminos es simple: **REST responde preguntas u operaciones; los eventos notifican cambios que otros deben conocer.** Kafka **no reemplaza** al gateway ni convierte la arquitectura en event-driven: es un segundo camino, acotado, para avisar.
 
-## 2. Por qué RabbitMQ (y no otro broker)
+## 2. Por qué Kafka (y no otro broker)
 
-- **Liviano y simple de operar:** suficiente para la escala de la plataforma (120 sesiones, pocos eventos por segundo); fácil de levantar y monitorear en Docker.
-- **Adecuado al caso de uso:** publicación de cambios de configuración (broadcast) mediante **exchange + cola por consumidor**.
-- **Soporte maduro con Spring:** Spring AMQP (RabbitTemplate/Listener).
-- **Colas por consumidor:** cada microservicio recibe lo que le interesa y lo procesa a su ritmo.
+- **Decisión de plataforma:** los grupos de **Notificaciones y Banco** también adoptaron Kafka → un único broker para toda la plataforma simplifica integración y contratos.
+- **Replay / histórico:** Kafka conserva los eventos por retención configurable y permite **re-leer un topic** desde un offset anterior (útil para reconstruir read models o auditar).
+- **Orden por partición:** particionando por clave de negocio (`courseId`/`key`) se garantiza **orden por curso** sin bloqueos globales.
+- **Robustez y escala:** **particiones + consumer groups** permiten escalar el procesamiento por dominio y tolerar caídas del consumidor (el **offset** persiste).
+- **Soporte maduro con Spring:** Spring for Apache Kafka (KafkaTemplate/@KafkaListener).
 
-**Alternativa considerada — Apache Kafka:** ofrece replay/histórico y particionado por `courseId`. No es necesario como principal porque los **read models de Reporting se reconstruyen vía contratos de lectura REST** desde los dominios dueños, no desde el historial del broker.
+**Alternativa considerada — RabbitMQ:** más liviano y excelente para *work-queues* punto a punto, pero **no es la decisión de la plataforma** (los demás grupos usan Kafka). Se mantiene documentado como alternativa; el patrón híbrido (REST + eventos + caché TTL + Outbox) es idéntico.
+
+> Nota: los **read models de Reporting se reconstruyen vía contratos de lectura REST** desde los dominios dueños (no dependemos del replay del broker, aunque Kafka lo ofrece como capacidad).
 
 ## 3. Cómo fluye un cambio de configuración
 
@@ -27,15 +30,15 @@ sequenceDiagram
     participant A as ADMIN
     participant GW as API Gateway
     participant AD as Administration Service
-    participant RQ as RabbitMQ (exchange administration.events)
-    participant C as Consumidores (cola propia + caché TTL 10 min)
+    participant RQ as Kafka (topic administration.events)
+    participant C as Consumidores (consumer group por servicio + caché TTL 10 min)
 
     A->>GW: PUT PAR-01 = 150
     GW->>AD: valida JWT + rol ADMIN
     AD->>AD: persiste v+1 + Outbox (misma tx)
     AD-->>A: 200 OK (sin esperar la propagación)
     AD->>RQ: GlobalConfigurationChanged {key, value, version}
-    RQ->>C: entrega a cada cola
+    RQ->>C: entrega a cada consumer group
     C->>C: v > local → actualiza caché (o descarta v ≤ local)
 ```
 
@@ -64,12 +67,12 @@ El evento identifica el cambio, no transporta lógica de negocio. Con la **versi
 
 **Garantías por paso:**
 - **Persistir antes de publicar (Outbox):** si el broker no está, el parámetro ya quedó guardado y el TTL de 10 min actúa como respaldo. El **Outbox** garantiza que el evento no se pierda tras el commit.
-- **Cola propia por consumidor:** cada servicio recibe solo lo que le interesa.
+- **Consumer group por servicio:** cada servicio lee el topic con su offset propio y recibe solo lo que le interesa.
 - **Invalidación idempotente:** versión recibida `≤` versión local → se descarta (RF-CFG-06: los cambios rigen hacia adelante; el evento representa la configuración vigente, nunca una orden de recalcular históricos).
 
-## 5. Exchange y colas del Backoffice
+## 5. Topic y consumer groups del Backoffice
 
-| Exchange | Eventos | Cola por consumidor |
+| Topic | Eventos | Consumer group por servicio |
 |---|---|---|
 | `administration.events` | GlobalConfigurationChanged, ModelProviderChanged, ModelFunctionChanged | `gamification`, `challenges`, `bank`, `roadmap`… |
 | `audit.events` | eventos de auditoría | `audit` |
@@ -81,6 +84,6 @@ El evento identifica el cambio, no transporta lógica de negocio. Con la **versi
 
 - **Multitenancy + RLS** (aislamiento de datos) es **independiente** de este mecanismo: la mensajería define *cómo viajan los cambios*; el multitenancy define *cómo se separan los datos*. Ambos conviven (ver [Multitenancy y RLS](/backend/arquitectura/multitenancy)).
 - **Outbox + idempotencia** por `event_id` y `version` son la base de confiabilidad.
-- **Validación con la cátedra:** el broker es infraestructura compartida de la plataforma → se coordina con los demás equipos y se valida la elección de RabbitMQ.
+- **Validación con la cátedra:** el broker es infraestructura compartida de la plataforma → se coordina con los demás equipos y se valida la elección de Kafka.
 
 > Patrón documentado en ADR-003 y detallado en las tareas de configuración (ver [Registro de parámetros](/msii/tareas/registro-parametros)).

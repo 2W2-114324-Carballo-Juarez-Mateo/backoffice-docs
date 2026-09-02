@@ -37,7 +37,7 @@ El front **nunca habla directo con microservicios**: va al BFF → **API Gateway
 | **Lecturas 02/04/05/07/08/10** | Solo si el panel lo requiere (ej. progreso, ranking, encuestas) |
 
 **Importante:**
-- **RabbitMQ no toca al front**: los eventos de configuración van a consumidores backend. El front lee los PAR vía BFF → Administration (o en los datos del SSR).
+- **Kafka no toca al front**: los eventos de configuración van a consumidores backend. El front lee los PAR vía BFF → Administration (o en los datos del SSR).
 - **Multitenancy en la UI**: selector de alcance — **curso puntual** o **todos los cursos** (`ALL`, caso ADMIN global). El BFF setea el contexto (`app.current_course`) desde la sesión validada; el front nunca manda un `course_id` suelto.
 
 ## 3. Nginx — config de ejemplo
@@ -159,6 +159,6 @@ Algoritmos: **round-robin** (por defecto) · **weighted** (`weight=3`) · **leas
 - **CI/CD**: GitHub Actions — build 2 etapas → tests → push de imagen → deploy del compose. (Es el mismo pipeline que ya usa la documentación del sitio.)
 - **Secretos/config**: variables de entorno vía `envsubst`; nunca URLs/credenciales hardcodeadas en `nginx.conf`.
 - **Monitoreo/rollback**: healthchecks (`service_healthy`), logs de Nginx, versionado por tag para revertir.
-- **Qué NO se hace**: el front no habla con la base ni con RabbitMQ; el BFF no contiene reglas de negocio; no se implementan otras experiencias (Alumno/Profesor).
+- **Qué NO se hace**: el front no habla con la base ni con Kafka; el BFF no contiene reglas de negocio; no se implementan otras experiencias (Alumno/Profesor).
 
 > Detalle técnico completo en el SDD (`sdd/frontend/docs/09-despliegue.md`) y en las tareas de front del módulo.

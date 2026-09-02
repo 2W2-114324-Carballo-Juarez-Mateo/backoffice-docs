@@ -45,18 +45,18 @@ sequenceDiagram
     GW-->>B: respuesta
 ```
 
-## Asíncrona — Eventos RabbitMQ
+## Asíncrona — Eventos Kafka
 
-Para procesos desacoplados: auditoría, read models, propagación de cambios. **RabbitMQ** es el broker elegido (ADR-003); Apache **Kafka** queda como alternativa. Patrón **híbrido**: REST por el gateway para lo síncrono + eventos por RabbitMQ para avisar, con **caché local con TTL** en los consumidores.
+Para procesos desacoplados: auditoría, read models, propagación de cambios. **Kafka** es el broker elegido (ADR-003); Apache **Kafka** queda como alternativa. Patrón **híbrido**: REST por el gateway para lo síncrono + eventos por Kafka para avisar, con **caché local con TTL** en los consumidores.
 
 **Publicación (BackOffice):**
 
 ```mermaid
 sequenceDiagram
     participant AD as Administration Service
-    participant K as RabbitMQ (exchange: administration.events)
+    participant K as Kafka (topic: administration.events)
     participant T01 as Tema 01 (auditoría)
-    participant GS as Gamification (cola: gamification)
+    participant GS as Gamification (consumer group: gamification)
 
     AD->>AD: persistir + escribir Outbox (misma transacción)
     AD->>K: GlobalConfigurationChanged (routing key por parámetro)
@@ -69,16 +69,16 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant CS as Cursos Service (equipo Cursos)
-    participant K as RabbitMQ (exchange: course.events)
-    participant RP as Reporting & Analytics (cola: reporting)
+    participant K as Kafka (topic: course.events)
+    participant RP as Reporting & Analytics (consumer group: reporting)
 
     CS->>K: CourseArchived / RosterUpdated
     K->>RP: actualizar read models (métricas, reportes)
 ```
 
-### Exchanges y colas
+### Topics y particiones
 
-| Exchange | Eventos | Rol BackOffice | Cola por consumidor |
+| Topic | Eventos | Rol BackOffice | Consumer group por servicio |
 |---|---|---|---|
 | `identity.events` | AdminCreated, AdminDeleted, AdminRecoveryExecuted, RoleChanged | Publica | `audit`, `reporting`… |
 | `administration.events` | GlobalConfigurationChanged, ModelProviderChanged, ModelFunctionChanged | Publica | `gamification`, `challenges`, `bank`, `roadmap`… |
@@ -87,7 +87,7 @@ sequenceDiagram
 | `course.events` | CourseCreated/Activated/Archived, RosterUpdated | **Consume** | `reporting` |
 | `gamification.events` / `ranking.events` / `survey.events` | eventos de otros equipos | **Consume** | `reporting` |
 
-Cada **cola** pertenece a un consumidor. **Idempotencia por `event_id` y por `version`** (descarta `v ≤ local`). Los **read models de Reporting se reconstruyen vía contratos de lectura REST** (no dependen del historial del broker). Los consumidores de parámetros usan **caché local con TTL 10 min** que el evento invalida antes (respaldo ante caída del Backoffice).
+Cada **consumer group** pertenece a un consumidor. **Idempotencia por `event_id` y por `version`** (descarta `v ≤ local`). Los **read models de Reporting se reconstruyen vía contratos de lectura REST** (no dependen del historial del broker). Los consumidores de parámetros usan **caché local con TTL 10 min** que el evento invalida antes (respaldo ante caída del Backoffice).
 
 ## Patrón Outbox
 
@@ -100,7 +100,7 @@ BEGIN TRANSACTION
 COMMIT
         │
         ▼
-   Publisher → RabbitMQ (exchange administration.events)
+   Publisher → Kafka (topic administration.events)
 ```
 
 ## Idempotencia en consumidores
@@ -143,7 +143,7 @@ sequenceDiagram
     participant A as ADMIN
     participant GW as Gateway de plataforma (T01)
     participant AD as Administration Service
-    participant K as RabbitMQ
+    participant K as Kafka
     participant T01 as Tema 01 (auditoría)
     participant T07 as Tema 07 (Evaluación LLM)
 
@@ -171,7 +171,7 @@ flowchart TD
     E -- Sí --> F{¿quedará al menos un ADMIN?}
     F -- No --> X
     F -- Sí --> G[Baja lógica + Outbox]
-    G --> H[RabbitMQ → Tema 01 persiste auditoría]
+    G --> H[Kafka → Tema 01 persiste auditoría]
 ```
 
 > La protección del último ADMIN debe manejarse con **transacción y revalidación** (concurrencia), no solo con validación previa.

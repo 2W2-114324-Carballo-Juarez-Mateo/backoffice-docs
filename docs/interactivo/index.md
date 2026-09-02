@@ -1,6 +1,6 @@
 # Sección Interactiva — Flujos del BackOffice
 
-> **Escenarios animados, paso a paso, con las capas del sistema:** Front · Back · Mensajería (RabbitMQ) · Base de datos. Cada escenario muestra cómo viajan los datos (Front → Nginx → BFF → Gateway → microservicio → BD/evento) con las entidades reales del proyecto.
+> **Escenarios animados, paso a paso, con las capas del sistema:** Front · Back · Mensajería (Kafka) · Base de datos. Cada escenario muestra cómo viajan los datos (Front → Nginx → BFF → Gateway → microservicio → BD/evento) con las entidades reales del proyecto.
 
 ## Cómo usarla
 
@@ -14,7 +14,7 @@ En cada escenario podés:
 
 | | Escenario | Muestra |
 |---|---|---|
-| 🎛 | [Cambio de configuración (PAR-01)](flujo-config) | REST + **Outbox** + **RabbitMQ** + **caché con TTL 10 min** (propagación híbrida) |
+| 🎛 | [Cambio de configuración (PAR-01)](flujo-config) | REST + **Outbox** + **Kafka** + **caché con TTL 10 min** (propagación híbrida) |
 | 🔒 | [Multitenancy + RLS](multitenancy-rls) | **TenantContext**, **RLS**, prueba 200/403 y caso ADMIN global (`ALL`) |
 | 🔑 | [Login y sesión](login) | Front → **BFF** → Identity: cookie httpOnly, 2FA, 401 → login |
 | 🚀 | [Despliegue del Frontend](despliegue) | CI/CD, **Docker 2 etapas**, `envsubst`, Nginx, Rolling Update |
@@ -25,7 +25,7 @@ En cada escenario podés:
 |---|---|
 | **Front** | Navegador · Nginx (reverse proxy) · **BFF BackOffice** |
 | **Back** | **API Gateway (T01)** · Administration · Reporting · Outbox · Consumidores |
-| **Mensajería** | **RabbitMQ** (exchange + cola por consumidor) |
+| **Mensajería** | **Kafka** (topic + consumer group por servicio) |
 | **Base de datos** | `global_parameter`, `outbox_message`, `cohort_metrics_snapshot` (**tenant-scoped + RLS**) |
 
-Cubre: **multitenancy por curso-cohorte**, **Row-Level Security**, **RabbitMQ + Outbox + idempotencia por versión**, **caché local con TTL**, BFF por experiencia y estrategias de despliegue.
+Cubre: **multitenancy por curso-cohorte**, **Row-Level Security**, **Kafka + Outbox + idempotencia por versión**, **caché local con TTL**, BFF por experiencia y estrategias de despliegue.

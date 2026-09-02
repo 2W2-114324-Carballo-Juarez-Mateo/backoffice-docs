@@ -3,7 +3,7 @@ export const scenarios = {
     id: 'config',
     title: 'Cambio de configuración global (PAR-01)',
     intro:
-      'Un ADMIN cambia PAR-01. El patrón es híbrido: REST por el gateway para la operación y RabbitMQ + caché con TTL para propagar el cambio a los consumidores, sin que la respuesta dependa de la propagación.',
+      'Un ADMIN cambia PAR-01. El patrón es híbrido: REST por el gateway para la operación y Kafka + caché con TTL para propagar el cambio a los consumidores, sin que la respuesta dependa de la propagación.',
     layers: [
       { id: 'front', name: 'FRONT' },
       { id: 'back', name: 'BACK' },
@@ -18,7 +18,7 @@ export const scenarios = {
       { id: 'adm', layer: 'back', label: 'Administration', note: 'Clean Architecture', x: 42 },
       { id: 'outbox', layer: 'back', label: 'Outbox', note: 'misma transacción', x: 52 },
       { id: 'consumer', layer: 'back', label: 'Consumidores', note: 'T03/05/08/10 · caché TTL 10 min', x: 90 },
-      { id: 'rq', layer: 'msg', label: 'RabbitMQ', note: 'exchange administration.events', x: 60 },
+      { id: 'rq', layer: 'msg', label: 'Kafka', note: 'topic administration.events', x: 60 },
       { id: 'dbpar', layer: 'db', label: 'global_parameter', note: 'key · value (jsonb) · version', x: 34 },
       { id: 'dbo', layer: 'db', label: 'outbox_message', note: 'eventId · payload · estado', x: 52 }
     ],
@@ -30,7 +30,7 @@ export const scenarios = {
       { id: 'e5', from: 'adm', to: 'dbpar', label: 'persiste v+1' },
       { id: 'e6', from: 'adm', to: 'dbo', label: 'escribe Outbox (misma tx)' },
       { id: 'e7', from: 'outbox', to: 'rq', label: 'GlobalConfigurationChanged' },
-      { id: 'e8', from: 'rq', to: 'consumer', label: 'entrega por cola' }
+      { id: 'e8', from: 'rq', to: 'consumer', label: 'entrega por consumer group' }
     ],
     steps: [
       { text: 'El ADMIN edita PAR-01 en el panel de configuración.', nodes: ['admin'], edges: [] },
@@ -39,8 +39,8 @@ export const scenarios = {
       { text: 'El API Gateway valida JWT + rol ADMIN y enruta a Administration.', nodes: ['gw', 'adm'], edges: ['e3', 'e4'] },
       { text: 'Administration persiste la nueva versión (v+1) en global_parameter.', nodes: ['adm', 'dbpar'], edges: ['e5'] },
       { text: 'En la MISMA transacción escribe el OutboxMessage: el evento no se pierde aunque el broker falle.', nodes: ['adm', 'dbo', 'outbox'], edges: ['e6'] },
-      { text: 'El publisher lee el Outbox y publica GlobalConfigurationChanged en el exchange administration.events (RabbitMQ).', nodes: ['outbox', 'rq'], edges: ['e7'] },
-      { text: 'RabbitMQ entrega el evento a la cola de cada consumidor: invalidan su caché si v > local, o lo descartan si v ≤ local (idempotencia por versión).', nodes: ['rq', 'consumer'], edges: ['e8'] },
+      { text: 'El publisher lee el Outbox y publica GlobalConfigurationChanged en el topic administration.events (Kafka).', nodes: ['outbox', 'rq'], edges: ['e7'] },
+      { text: 'Kafka entrega el evento a cada consumer group (con su offset): invalidan su caché si v > local, o lo descartan si v ≤ local (idempotencia por versión).', nodes: ['rq', 'consumer'], edges: ['e8'] },
       { text: 'Resiliencia: si el evento no llega, el TTL de 10 min es el respaldo; si el Backoffice cae, el consumidor sirve el último valor conocido.', nodes: ['consumer'], edges: [] }
     ],
     entities: [

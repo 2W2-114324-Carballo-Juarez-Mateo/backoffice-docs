@@ -29,7 +29,7 @@ export default withMermaid({
           { text: 'Vista general', link: '/backend/arquitectura/vista-general' },
           { text: 'Microservicios', link: '/backend/arquitectura/microservicios' },
           { text: 'Multitenancy y RLS', link: '/backend/arquitectura/multitenancy' },
-          { text: 'Mensajería híbrida (RabbitMQ)', link: '/backend/arquitectura/mensajeria' },
+          { text: 'Mensajería híbrida (Kafka)', link: '/backend/arquitectura/mensajeria' },
           { text: 'Comunicación', link: '/backend/arquitectura/comunicacion' },
           { text: 'Patrones de diseño', link: '/backend/arquitectura/patrones' },
           { text: 'Estructura de carpetas', link: '/backend/arquitectura/carpetas' },
@@ -64,7 +64,7 @@ export default withMermaid({
               { text: 'Vista general', link: '/backend/arquitectura/vista-general' },
               { text: 'Microservicios', link: '/backend/arquitectura/microservicios' },
 { text: 'Multitenancy y RLS', link: '/backend/arquitectura/multitenancy' },
-          { text: 'Mensajería híbrida (RabbitMQ)', link: '/backend/arquitectura/mensajeria' },
+          { text: 'Mensajería híbrida (Kafka)', link: '/backend/arquitectura/mensajeria' },
               { text: 'Comunicación', link: '/backend/arquitectura/comunicacion' },
               { text: 'Patrones de diseño', link: '/backend/arquitectura/patrones' },
               { text: 'Estructura de carpetas', link: '/backend/arquitectura/carpetas' }

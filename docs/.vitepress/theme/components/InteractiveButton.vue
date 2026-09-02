@@ -12,7 +12,7 @@ import { withBase } from 'vitepress'
       </svg>
       <span class="interactive-label">Flujos</span>
     </a>
-    <div class="interactive-tip" role="tooltip">Flujos interactivos del BackOffice: Front · Back · BD · RabbitMQ · Multitenancy/RLS</div>
+    <div class="interactive-tip" role="tooltip">Flujos interactivos del BackOffice: Front · Back · BD · Kafka · Multitenancy/RLS</div>
   </div>
 </template>
 
