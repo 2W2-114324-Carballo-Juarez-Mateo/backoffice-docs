@@ -260,14 +260,19 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
 }
 .fp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 30px;
   height: 30px;
+  padding: 0;
   border-radius: 8px;
   border: 1px solid var(--vp-c-divider);
   background: var(--vp-button-alt-bg);
   color: var(--vp-c-text-1);
   cursor: pointer;
   font-size: 13px;
+  line-height: 1;
   transition: border-color 0.2s, background-color 0.2s;
 }
 .fp-btn:hover:not(:disabled) {
@@ -315,6 +320,7 @@ onBeforeUnmount(() => {
   width: 15px;
   height: 15px;
   display: block;
+  margin: 0;
 }
 
 /* Pantalla completa */
