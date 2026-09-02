@@ -342,10 +342,10 @@ onBeforeUnmount(() => {
   flex-direction: column;
 }
 .fp:fullscreen .fp-svg {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 .fp:fullscreen .fp-controls {
   margin-top: 12px;
@@ -381,29 +381,6 @@ onBeforeUnmount(() => {
 }
 .fp:fullscreen .fp-entities-title {
   font-size: 13px;
-}
-
-/* Escalar nodos y textos dentro del SVG en pantalla completa */
-.fp:fullscreen .fp-node-rect {
-  stroke-width: 2;
-}
-.fp:fullscreen .fp-node-label {
-  font-size: 15px;
-}
-.fp:fullscreen .fp-node-note {
-  font-size: 11px;
-}
-.fp:fullscreen .fp-edge {
-  stroke-width: 2.2;
-}
-.fp:fullscreen .fp-edge.is-active {
-  stroke-width: 3.4;
-}
-.fp:fullscreen .fp-edge-label {
-  font-size: 12px;
-}
-.fp:fullscreen .fp-band-label {
-  font-size: 16px;
 }
 .fp-step {
   margin-top: 10px;
