@@ -427,3 +427,73 @@ onBeforeUnmount(() => {
   color: var(--vp-c-text-2);
 }
 </style>
+
+<style>
+/* Modo oscuro: colores más brillantes y legibles en el diagrama */
+html.dark .fp .fp-player {
+  border-color: #3a4a66;
+  background: #12161f;
+}
+html.dark .fp .fp-svg {
+  background: transparent;
+}
+html.dark .fp .fp-band[data-layer='front'] { fill: rgba(255, 107, 51, 0.16); }
+html.dark .fp .fp-band[data-layer='back'] { fill: rgba(76, 145, 255, 0.16); }
+html.dark .fp .fp-band[data-layer='msg'] { fill: rgba(191, 106, 255, 0.16); }
+html.dark .fp .fp-band[data-layer='db'] { fill: rgba(60, 210, 120, 0.16); }
+
+html.dark .fp .fp-node-rect {
+  stroke: #4b5c7a;
+  fill: #1d2532;
+}
+html.dark .fp .fp-node-label {
+  fill: #f4f6fa;
+}
+html.dark .fp .fp-node-note {
+  fill: #bcc6d6;
+}
+html.dark .fp .fp-edge {
+  stroke: #93a1b8;
+  stroke-opacity: 0.65;
+}
+html.dark .fp .fp-edge-label {
+  fill: #b7c1d0;
+}
+html.dark .fp .fp-band-label {
+  fill: #d3d9e3;
+}
+html.dark .fp .fp-band-label[data-layer='front'] { fill: #ff9d78; }
+html.dark .fp .fp-band-label[data-layer='back'] { fill: #8db4ff; }
+html.dark .fp .fp-band-label[data-layer='msg'] { fill: #c79cff; }
+html.dark .fp .fp-band-label[data-layer='db'] { fill: #7fe3a8; }
+
+html.dark .fp .fp-step {
+  color: #e9edf4;
+  border-color: #3a4a66;
+  background: #1a2230;
+}
+html.dark .fp .fp-stepno {
+  color: #b7c1d0;
+}
+html.dark .fp .fp-btn {
+  color: #e9edf4;
+  background: #1d2532;
+  border-color: #3a4a66;
+}
+html.dark .fp .fp-dot {
+  background: #3a4a66;
+}
+html.dark .fp .fp-dot.is-done {
+  background: #75839b;
+}
+html.dark .fp .fp-entity {
+  border-color: #3a4a66;
+  background: #171e2a;
+}
+html.dark .fp .fp-entity code {
+  color: #7fb0ff;
+}
+html.dark .fp .fp-entity span {
+  color: #bcc6d6;
+}
+</style>
