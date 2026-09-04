@@ -56,13 +56,14 @@ function bullets(slide, items, opts = {}) {
   })
 }
 
-function box(slide, x, y, w, h, color, label, sub) {
+function box(slide, x, y, w, color, label, sub) {
+  const h = 0.72
   slide.addShape('roundRect', { x, y, w, h, fill: { color, transparency: 84 }, line: { color, width: 1.5 } })
-  slide.addText(label, { x: x + 0.04, y: y + 0.06, w: w - 0.08, h: 0.4, fontSize: 12, bold: true, color: C.dark, align: 'center', valign: 'middle' })
-  if (sub) slide.addText(sub, { x: x + 0.04, y: y + 0.42, w: w - 0.08, h: 0.32, fontSize: 9, color: C.muted, align: 'center', valign: 'top' })
+  slide.addText(label, { x: x + 0.06, y: y + 0.03, w: w - 0.12, h: 0.34, fontSize: 11.5, bold: true, color: C.dark, align: 'center', valign: 'middle' })
+  if (sub) slide.addText(sub, { x: x + 0.06, y: y + 0.37, w: w - 0.12, h: 0.3, fontSize: 8.5, color: C.muted, align: 'center', valign: 'middle' })
 }
 function arrow(slide, x, y, dir, color) {
-  slide.addText(dir, { x, y, w: 0.6, h: 0.6, fontSize: 20, bold: true, color: color || C.muted, align: 'center', valign: 'middle' })
+  slide.addText(dir, { x, y, w: 0.44, h: 0.3, fontSize: 16, bold: true, color: color || C.muted, align: 'center', valign: 'middle' })
 }
 function note(slide, y, text, h) {
   slide.addShape('roundRect', { x: 0.6, y, w: 12.1, h: h || 0.95, fill: { color: C.soft }, line: { color: C.line } })
@@ -144,37 +145,37 @@ const TOTAL = 14
 {
   const s = pptx.addSlide()
   decor(s, 'VISIÓN GENERAL', 'Arquitectura general (por capas)', C.brand)
+  const col = { nav: 3.52, gw: 6.27, adm: 9.02, rpt: 11.55 } // centros de columna
   // Lane backgrounds
-  s.addShape('roundRect', { x: 0.25, y: 1.45, w: 12.85, h: 1.95, fill: { color: C.front, transparency: 92 }, line: { color: C.front, width: 0.75 } })
-  s.addShape('roundRect', { x: 0.25, y: 3.5, w: 12.85, h: 1.05, fill: { color: C.brand, transparency: 92 }, line: { color: C.brand, width: 0.75 } })
-  s.addShape('roundRect', { x: 0.25, y: 4.65, w: 12.85, h: 1.0, fill: { color: C.msg, transparency: 92 }, line: { color: C.msg, width: 0.75 } })
-  s.addShape('roundRect', { x: 0.25, y: 5.75, w: 12.85, h: 1.0, fill: { color: C.db, transparency: 92 }, line: { color: C.db, width: 0.75 } })
-  s.addText('FRONT', { x: 0.32, y: 1.5, w: 2.0, h: 0.3, fontSize: 11, bold: true, color: C.front })
-  s.addText('BACK', { x: 0.32, y: 3.55, w: 2.0, h: 0.3, fontSize: 11, bold: true, color: C.brand })
-  s.addText('MENSAJERÍA', { x: 0.32, y: 4.7, w: 2.0, h: 0.3, fontSize: 11, bold: true, color: C.msg })
-  s.addText('BASE DE DATOS', { x: 0.32, y: 5.8, w: 2.2, h: 0.3, fontSize: 11, bold: true, color: C.db })
-  // Front
-  box(s, 2.3, 1.7, 2.0, 0.8, C.front, 'Navegador', 'el ADMIN')
-  arrow(s, 4.36, 1.9, '→', C.muted)
-  box(s, 5.0, 1.7, 2.0, 0.8, C.front, 'Nginx', 'web + /api/*')
-  arrow(s, 7.06, 1.9, '→', C.muted)
-  box(s, 7.7, 1.7, 2.2, 0.8, C.front, 'Angular SSR', 'consola admin')
-  box(s, 5.0, 2.55, 2.0, 0.8, C.front, 'BFF BackOffice', 'agrega por pantalla')
-  // Back
-  arrow(s, 6.0, 2.42, '↓', C.muted)
-  box(s, 5.0, 3.6, 2.0, 0.8, C.brand, 'API Gateway (T01)', 'JWT + rol')
-  arrow(s, 7.06, 3.8, '→', C.muted)
-  box(s, 7.7, 3.6, 2.2, 0.8, C.brand, 'Administration', 'PAR + proveedores')
-  arrow(s, 9.96, 3.8, '→', C.muted)
-  box(s, 10.6, 3.6, 2.2, 0.8, C.brand, 'Reporting', 'panel + reportes')
-  // Mensajería
-  arrow(s, 8.8, 4.46, '↓', C.msg)
-  box(s, 7.7, 4.7, 2.2, 0.8, C.msg, 'Kafka', 'topic administration.events')
-  // BD
-  arrow(s, 8.8, 5.56, '↓', C.db)
-  box(s, 7.7, 5.8, 2.2, 0.8, C.db, 'reporting_db', 'tenant + RLS')
-  arrow(s, 6.0, 4.46, '↓', C.db)
-  box(s, 5.0, 5.8, 2.0, 0.8, C.db, 'global_parameter', 'versionado')
+  s.addShape('roundRect', { x: 0.3, y: 1.35, w: 12.7, h: 2.6, fill: { color: C.front, transparency: 92 }, line: { color: C.front, width: 0.75 } })
+  s.addShape('roundRect', { x: 0.3, y: 4.05, w: 12.7, h: 1.0, fill: { color: C.brand, transparency: 92 }, line: { color: C.brand, width: 0.75 } })
+  s.addShape('roundRect', { x: 0.3, y: 5.15, w: 12.7, h: 1.0, fill: { color: C.msg, transparency: 92 }, line: { color: C.msg, width: 0.75 } })
+  s.addText('FRONT', { x: 0.42, y: 1.42, w: 1.6, h: 0.28, fontSize: 11, bold: true, color: C.front })
+  s.addText('BACK', { x: 0.42, y: 4.12, w: 1.6, h: 0.28, fontSize: 11, bold: true, color: C.brand })
+  s.addText('MENSAJERÍA + BD', { x: 0.42, y: 5.22, w: 1.9, h: 0.28, fontSize: 11, bold: true, color: C.msg })
+
+  // FRONT — fila superior + BFF (columna NGX)
+  box(s, 2.45, 1.8, 2.15, C.front, 'Navegador', 'el ADMIN')
+  arrow(s, 4.68, 2.0, '→', C.muted)
+  box(s, 5.2, 1.8, 2.15, C.front, 'Nginx', 'web + /api/*')
+  arrow(s, 7.44, 2.0, '→', C.muted)
+  box(s, 7.98, 1.8, 2.1, C.front, 'Angular SSR', 'consola admin')
+  arrow(s, col.gw - 0.22, 2.53, '↓', C.muted)
+  box(s, 5.2, 3.05, 2.15, C.front, 'BFF BackOffice', 'agrega por pantalla')
+
+  // BACK — GW · ADM · RPT
+  arrow(s, col.gw - 0.22, 3.78, '↓', C.muted)
+  box(s, 5.2, 4.15, 2.15, C.brand, 'API Gateway (T01)', 'JWT + rol')
+  arrow(s, 7.44, 4.35, '→', C.muted)
+  box(s, 7.98, 4.15, 2.1, C.brand, 'Administration', 'PAR + proveedores')
+  arrow(s, 10.17, 4.35, '→', C.muted)
+  box(s, 10.7, 4.15, 2.0, C.brand, 'Reporting', 'panel · reportes')
+
+  // MENSAJERÍA + BD — Kafka (bajo ADM) y reporting_db (bajo Reporting)
+  arrow(s, col.adm - 0.22, 4.88, '↓', C.msg)
+  box(s, 7.98, 5.25, 2.1, C.msg, 'Kafka', 'administration.events')
+  arrow(s, col.rpt - 0.22, 4.88, '↓', C.db)
+  box(s, 10.7, 5.25, 2.0, C.db, 'PostgreSQL', 'reporting + RLS')
   footer(s, TOTAL)
 }
 
