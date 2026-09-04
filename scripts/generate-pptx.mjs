@@ -33,14 +33,16 @@ function header(slide, title, kicker) {
 }
 
 function bullets(slide, items, opts = {}) {
-  const rows = items.map((it) => {
+  const paras = []
+  for (const it of items) {
     if (Array.isArray(it)) {
-      return [{ text: it[0], options: { bold: true, color: C.dark, bullet: true, breakLine: false } },
-              { text: it[1], options: { color: C.muted, breakLine: false } }]
+      paras.push({ text: it[0], options: { bullet: true, bold: true, color: C.dark, paraSpaceAfter: 2 } })
+      paras.push({ text: it[1], options: { indentLevel: 1, color: C.muted, paraSpaceAfter: 10 } })
+    } else {
+      paras.push({ text: it, options: { bullet: true, color: C.dark } })
     }
-    return [{ text: it, options: { color: C.dark, bullet: true } }]
-  })
-  slide.addText(rows, {
+  }
+  slide.addText(paras, {
     x: 0.6, y: 1.5, w: 12.1, h: opts.h || 5.2,
     fontSize: 16, fontFace: 'Calibri', lineSpacingMultiple: 1.15, valign: 'top'
   })
