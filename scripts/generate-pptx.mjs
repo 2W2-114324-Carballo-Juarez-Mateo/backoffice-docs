@@ -64,7 +64,30 @@ function band(slide, y, color, label, detail) {
   s.addText('Nginx · BFF · API Gateway · Kafka · Multitenancy + RLS · Despliegue', { x: 0.8, y: 3.7, w: 11.7, h: 0.5, fontSize: 14, color: C.muted })
 }
 
-/* 2 — Agenda */
+/* 2 — Definición de roles por grupo (consigna del profe) */
+{
+  const s = pptx.addSlide()
+  header(s, 'Definición de roles por grupo', 'CONSIGNA: ¿QUÉ ROL ASUMIMOS?')
+  const rows = [
+    [{ text: 'Rol (de la consigna)', options: { bold: true, color: 'FFFFFF', fill: { color: C.brand } } },
+     { text: 'Quién lo asume', options: { bold: true, color: 'FFFFFF', fill: { color: C.brand } } },
+     { text: 'Estado', options: { bold: true, color: 'FFFFFF', fill: { color: C.brand } } }],
+    [{ text: 'Implementación del BFF', options: { bold: true, color: C.dark } },
+     { text: 'Equipo BackOffice (BFF por experiencia)', options: { color: C.brand, bold: true } },
+     { text: '✅ Asumido — BFF BackOffice + estándar de BFF', options: { color: C.dark } }],
+    [{ text: 'Librería compartida (@tup/ui, @tup/contracts)', options: { color: C.dark } },
+     { text: 'A coordinar en clase', options: { color: C.muted } },
+     { text: '⏳ Proponemos aportar los contratos OpenAPI', options: { color: C.muted } }],
+    [{ text: 'Marketplace de skills', options: { color: C.dark } },
+     { text: 'A coordinar en clase', options: { color: C.muted } },
+     { text: '⏳ El BackOffice lo consume (config de agentes)', options: { color: C.muted } }]
+  ]
+  s.addTable(rows, { x: 0.6, y: 1.5, w: 12.1, colW: [4.2, 4.4, 3.5], fontSize: 13, rowH: 0.7, border: { type: 'solid', color: C.softline, pt: 1 }, valign: 'middle' })
+  s.addShape('roundRect', { x: 0.6, y: 5.2, w: 12.1, h: 1.1, fill: { color: C.soft }, line: { color: C.softline } })
+  s.addText('Nuestra postura: asumimos el BFF por experiencia (el BFF BackOffice es del equipo) y proponemos un estándar de BFF de plataforma. Librería y marketplace se coordinan en clase.', { x: 0.9, y: 5.35, w: 11.5, h: 0.8, fontSize: 14, italic: true, color: C.dark })
+}
+
+/* 3 — Agenda */
 {
   const s = pptx.addSlide()
   header(s, 'Agenda', 'HOY')
