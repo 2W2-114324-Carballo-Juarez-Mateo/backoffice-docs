@@ -106,7 +106,9 @@ export default withMermaid({
           },
           { text: 'Requerimientos funcionales', link: '/msii/requerimientos-funcionales' },
           { text: 'Requerimientos no funcionales', link: '/msii/requerimientos-no-funcionales' },
-          { text: 'Trazabilidad RF → servicio', link: '/msii/trazabilidad' }
+          { text: 'Trazabilidad RF → servicio', link: '/msii/trazabilidad' },
+          { text: 'Rol del equipo (BFF por experiencia)', link: '/msii/rol-equipo' },
+          { text: 'Flujos y casos de uso (TPI)', link: '/msii/casos-de-uso' }
         ]
       },
       {
