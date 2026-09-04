@@ -29,7 +29,7 @@
 | RNF-05 | Soportar **120 sesiones concurrentes** (objetivo PRD), sin cuello de botella en operaciones administrativas. |
 | RNF-06 | Resiliencia: timeouts, retry controlado, circuit breaker; operaciones asíncronas reintentables sin duplicar efectos. |
 | RNF-07 | Idempotencia: operaciones críticas idempotentes; consumidores toleran duplicados (event_id y versión). |
-| RNF-13 | Mensajería híbrida: cambios de configuración se propagan por eventos Kafka (topic + consumer group por servicio) con **caché local TTL 10 min** en los consumidores; si el evento no llega, el TTL es el respaldo, y si el Backoffice cae se sirve el último valor conocido. |
+| RNF-17 | Mensajería híbrida: cambios de configuración se propagan por eventos Kafka (topic + consumer group por servicio) con **caché local TTL 10 min** en los consumidores; si el evento no llega, el TTL es el respaldo, y si el Backoffice cae se sirve el último valor conocido. |
 
 ## Trazabilidad y observabilidad
 
