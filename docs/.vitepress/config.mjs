@@ -92,6 +92,7 @@ export default withMermaid({
         collapsed: false,
         items: [
           { text: 'Portada MSII', link: '/msii/' },
+          { text: 'Sprint 0 — Propuesta inicial', link: '/msii/sprint0' },
           { text: 'Planificación y dimensionamiento', link: '/msii/planificacion' },
           {
             text: 'Tareas (Must)',

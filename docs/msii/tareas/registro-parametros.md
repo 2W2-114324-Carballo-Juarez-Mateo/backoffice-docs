@@ -59,6 +59,7 @@ Migración Flyway `V1__global_parameter.sql`.
 - Solo ADMIN modifica (RF-CFG-05). PROFESOR solo lectura.
 - Un cambio **nunca recalcula** XP/monedas históricos (RF-CFG-06).
 - El registro es genérico: no depende de la cantidad de parámetros (18 del PRD, 24 mencionados por el profe).
+- **Candidatos deducidos PAR-19..24** (penalidad 30%, ventana 48 h, techo 3x, límite LLM, frescura 15 min, sesión) → se cargan como cualquier PAR del registro; **a validar con la cátedra** (ver doc BackOffice §PAR-19..24).
 
 ## 8. Plan de implementación
 | Paso | Subtarea | Días |
