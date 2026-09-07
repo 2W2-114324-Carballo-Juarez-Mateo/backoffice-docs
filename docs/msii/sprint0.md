@@ -14,32 +14,52 @@
 
 > Adaptada (no genérica): se ancla a la tecnología, controles y entregas del equipo. Estructura profesional en **niveles**.
 
-**Nivel 0 · Tarea** — cumple sus criterios de aceptación · build verde · se cierra cuando su historia alcanza el Nivel 1.
+**Nivel 0 · Tarea** — cumple sus criterios de aceptación · build verde · **cobertura de tests ≥ 90%** (objetivo) · se cierra cuando su historia alcanza el Nivel 1.
 
-**Nivel 1 · Historia de Usuario** — cumple el `RF` citado y sus criterios · build verde · Clean Architecture · tests unitarios + Testcontainers (PostgreSQL + Kafka) · **Outbox + idempotencia** verificados · **autorización por rol** (200/403) · **multitenancy + RLS** verificado (`ALL` solo ADMIN y auditado) · contrato OpenAPI/eventos coordinado · PR revisada por ≥1 compañero · sin secretos · `sdd/` + sitio sincronizados.
+**Nivel 1 · Historia de Usuario** — cumple el `RF` citado y sus criterios · build verde · Clean Architecture · tests unitarios + Testcontainers (PostgreSQL + Kafka) · **cobertura de tests ≥ 90%** (objetivo) · **Outbox + idempotencia** verificados · **autorización por rol** (200/403) · **multitenancy + RLS** verificado (`ALL` solo ADMIN y auditado) · contrato OpenAPI/eventos coordinado · PR revisada por ≥1 compañero · sin secretos · `sdd/` + sitio sincronizados.
 
 **Nivel 2 · Sprint** — todas sus historias cumplen el Nivel 1 · sin regresiones · Taiga actualizado · revisión/demo lista · retrospectiva realizada.
 
 **Nivel 3 · Release** — `main` con CI verde y tag · desplegable (Docker Compose/`envsubst`) · contratos estables coordinados · documentación alineada.
 
-## 3. Épicas
+## 3. Épicas (clasificadas por tema)
 
-| ID | Épica | RF | Prioridad |
+### T-A · Gobernanza y Configuración Institucional
+> **Quién tiene poder de actuar y bajo qué reglas:** humanos con rol **ADMIN** (Épicas 1 y 2) y **modelos de IA habilitados** (Épica 3). Todas **escriben/deciden**, no solo muestran.
+
+| Épica | Alcance | RF | Prioridad |
 |---|---|---|---|
-| EP-1 | Administración de plataforma | RF-CFG-01/05 · RF-ROL | Must |
-| EP-2 | Configuración global (PAR-01..24) | RF-CFG-04/06 | Must |
-| EP-3 | Gestión del proveedor LLM | RF-IA-ADM-01..07 | Must |
-| EP-4 | Contratos de lectura (6 temas) | RF-RPT-10 | Must |
-| EP-5 | Reportes docentes y panel | RF-RPT-01/02/04/05 | Must/Should/Could |
-| EP-6 | Frontend BackOffice (Angular + BFF) | a definir | Futura |
+| **Épica 1 — Parámetros Globales** | Reglas de economía y operativas (PAR-01..24) que define el ADMIN y aplican los Temas 03/05/08/10 | RF-CFG-04/06 | Must |
+| **Épica 2 — Administración de la Plataforma** | Gestión de administradores y roles: quién puede operar | RF-CFG-01/05 · RF-ROL | Must |
+| **Épica 3 — Modelos LLM y Golden Set** | Proveedores/modelos de IA, evaluador, calibración y deriva (exclusivo ADMIN) | RF-IA-ADM-01..07 | Must |
+
+### T-B · Observabilidad y Soporte Académico
+> **La única que muestra información en vez de gobernarla:** su usuario típico (**PROFESOR**) solo consulta, no configura nada.
+
+| Épica | Alcance | RF | Prioridad |
+|---|---|---|---|
+| **Épica 4 — Observabilidad, Reportes y Panel de Riesgo** | Reportes docentes, panel de métricas, alumno en riesgo, export y alertas (+ habilitador de contratos de lectura) | RF-RPT-01/02/03/04/05 · RF-RPT-10 | Must / Should / Could |
+
+**Futura:** Frontend BackOffice (app Angular + BFF) — a definir.
 
 ## 4. Historias de Usuario (primera versión)
 
-- **US-01** ADMIN → alta/baja de administradores (no auto-eliminarse · último admin protegido · auditada).
-- **US-02** ADMIN → crear/editar PAR-01..24 (versionado · hacia adelante · evento).
-- **US-03** Consumidor (T03/05/08/10) → recibe el cambio de parámetro (Outbox · idempotencia · caché TTL 10 min).
+### T-A · Gobernanza y Configuración Institucional
+
+**Épica 1 · Parámetros Globales** — el ADMIN configura, los Temas 03/05/08/10 aplican (sin hardcodear).
+- **US-01** ADMIN → crear/editar PAR-01..24 (versionado · hacia adelante · evento).
+- **US-02** Consumidor (T03/05/08/10) → recibe el cambio de parámetro (Outbox · idempotencia · caché TTL 10 min).
+
+**Épica 2 · Administración de la Plataforma** — control de quién opera.
+- **US-03** ADMIN → alta/baja de administradores (no auto-eliminarse · último admin protegido · auditada).
+
+**Épica 3 · Modelos LLM y Golden Set** — gobernanza de los modelos de IA (exclusivo ADMIN).
 - **US-04** ADMIN → alta/sustitución/baja de proveedor o modelo IA (exclusivo · auditado · evento).
 - **US-05** ADMIN → habilitar evaluador solo si pasa el golden set (tolerancia PAR-14 · deriva → alerta).
+
+### T-B · Observabilidad y Soporte Académico
+
+**Épica 4 · Observabilidad, Reportes y Panel de Riesgo** — muestra información; PROFESOR consulta solo su curso.
 - **US-06** Reporting → consume eventos/lecturas de los 6 temas para read models.
 - **US-07** PROFESOR → reportes de su curso-cohorte (solo su curso · alumno en riesgo).
 - **US-08** ADMIN → consolidado global de métricas (y por curso) (`ALL` solo ADMIN y auditado).

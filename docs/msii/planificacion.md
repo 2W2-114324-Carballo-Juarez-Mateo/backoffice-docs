@@ -1,6 +1,7 @@
 # Planificación y dimensionamiento
 
 > Tareas asignadas al Backoffice (Tema 12) según `TUP_PIV_BE_PROPUESTA_ARQ.pdf`, divididas en las **3 columnas del documento** con nombres formales (MoSCoW) y **dimensionadas en talles T-shirt** (S / M / L).
+> **Clasificación por tema (supra-épicas):** **T-A · Gobernanza y Configuración Institucional** (Administración de plataforma · Registro de parámetros PAR · Proveedor LLM) y **T-B · Observabilidad y Soporte Académico** (Contratos de lectura · Reportes docentes).
 > Regla del documento: **"Pedido para empezar"** = núcleo del dominio + lo que otros equipos necesitan para no quedar bloqueados; **"Para más adelante"** = se diseña ahora y se implementa después; **"Podría ser"** = extra si el núcleo está entregado.
 
 ## 🟢 Must — Núcleo (pedido para empezar · sprint 1)
