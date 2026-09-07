@@ -45,7 +45,7 @@
 
 ## 4. Historias de Usuario (primera versión)
 
-> **Especificación detallada** (jerarquía de temas, matriz de trazabilidad, y cada historia con **reglas de negocio, criterios de aceptación, escenarios BDD/Gherkin, endpoints y estimación**) en el repo del equipo: `plan/sprint0/sprint0.md` (secciones 4-6).
+> **Especificación completa** de cada historia (con **reglas de negocio, criterios de aceptación, escenarios BDD/Gherkin, endpoints, estimación y tareas asociadas**) en el repo del equipo: `plan/sprint0/uh/US-01.md` … `US-09.md`, siguiendo el template del equipo.
 
 ### T-A · Gobernanza y Configuración Institucional
 
