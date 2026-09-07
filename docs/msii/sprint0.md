@@ -34,11 +34,12 @@
 | **Épica 3 — Modelos LLM y Golden Set** | Proveedores/modelos de IA, evaluador, calibración y deriva (exclusivo ADMIN) | RF-IA-ADM-01..07 | Must |
 
 ### T-B · Observabilidad y Soporte Académico
-> **La única que muestra información en vez de gobernarla:** su usuario típico (**PROFESOR**) solo consulta, no configura nada.
+> **Muestra información en vez de gobernarla:** el **PROFESOR** solo consulta (no configura nada); el **ADMIN** ve el consolidado. Incluye el habilitador transversal de los contratos de lectura.
 
 | Épica | Alcance | RF | Prioridad |
 |---|---|---|---|
-| **Épica 4 — Observabilidad, Reportes y Panel de Riesgo** | Reportes docentes, panel de métricas, alumno en riesgo, export y alertas (+ habilitador de contratos de lectura) | RF-RPT-01/02/03/04/05 · RF-RPT-10 | Must / Should / Could |
+| **Épica 4 — Contratos de Lectura** | Consumo de eventos/lecturas de los Temas 02/04/05/07/08/10 para los read models (habilitador del tema) | RF-RPT-10 | Must |
+| **Épica 5 — Observabilidad, Reportes y Panel de Riesgo** | Reportes docentes, panel de métricas, alumno en riesgo, export y alertas | RF-RPT-01/02/03/04/05 | Must / Should / Could |
 
 **Futura:** Frontend BackOffice (app Angular + BFF) — a definir.
 
@@ -59,8 +60,10 @@
 
 ### T-B · Observabilidad y Soporte Académico
 
-**Épica 4 · Observabilidad, Reportes y Panel de Riesgo** — muestra información; PROFESOR consulta solo su curso.
+**Épica 4 · Contratos de Lectura** — habilitador transversal: el Reporting consume los datos de los demás equipos.
 - **US-06** Reporting → consume eventos/lecturas de los 6 temas para read models.
+
+**Épica 5 · Observabilidad, Reportes y Panel de Riesgo** — muestra información; PROFESOR consulta solo su curso.
 - **US-07** PROFESOR → reportes de su curso-cohorte (solo su curso · alumno en riesgo).
 - **US-08** ADMIN → consolidado global de métricas (y por curso) (`ALL` solo ADMIN y auditado).
 - **US-09** ADMIN/PROFESOR → exportar reportes (CSV/PDF).
