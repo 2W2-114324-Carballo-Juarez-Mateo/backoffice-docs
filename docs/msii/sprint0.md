@@ -45,6 +45,8 @@
 
 ## 4. Historias de Usuario (primera versión)
 
+> **Especificación detallada** (jerarquía de temas, matriz de trazabilidad, y cada historia con **reglas de negocio, criterios de aceptación, escenarios BDD/Gherkin, endpoints y estimación**) en el repo del equipo: `plan/sprint0/sprint0.md` (secciones 4-6).
+
 ### T-A · Gobernanza y Configuración Institucional
 
 **Épica 1 · Parámetros Globales** — el ADMIN configura, los Temas 03/05/08/10 aplican (sin hardcodear).
