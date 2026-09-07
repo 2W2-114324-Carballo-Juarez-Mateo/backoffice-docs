@@ -1,6 +1,6 @@
 # Sprint 0 — Propuesta inicial de trabajo
 
-> **Entregable:** un único PDF por grupo (Propuesta de Sprint 0 + DoD + capacidad + épicas + historias). Fuente: `plan/sprint0/sprint0.md` en el repo del equipo.
+> **Entregable:** un único PDF por grupo (Propuesta de Sprint 0 + DoD + capacidad + épicas + historias). Fuente: `plan/sprint0/Sprint0-Propuesta.md` en el repo del equipo. Las **épicas** están en `plan/sprint0/epicas/` y las **historias** en `plan/sprint0/uh/` (formato template del equipo).
 
 ## 1. Propuesta de Sprint 0
 
