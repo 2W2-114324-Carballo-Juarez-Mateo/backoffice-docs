@@ -45,7 +45,7 @@
 
 ## 4. Historias de Usuario (primera versión)
 
-> **Especificación completa** de cada historia (con **reglas de negocio, criterios de aceptación, escenarios BDD/Gherkin, endpoints, estimación y tareas asociadas**) en el repo del equipo: `plan/sprint0/uh/US-01.md` … `US-09.md`, siguiendo el template del equipo.
+> **Especificación completa** de cada historia (con **reglas de negocio, criterios de aceptación, escenarios BDD/Gherkin, endpoints, estimación y tareas asociadas**) en el repo del equipo: `plan/sprint0/uh/US-01.md` … `US-14.md`, siguiendo el template del equipo.
 
 ### T-A · Gobernanza y Configuración Institucional
 
@@ -57,18 +57,23 @@
 - **US-03** ADMIN → alta/baja de administradores (no auto-eliminarse · último admin protegido · auditada).
 
 **Épica 3 · Modelos LLM y Golden Set** — gobernanza de los modelos de IA (exclusivo ADMIN).
-- **US-04** ADMIN → alta/sustitución/baja de proveedor o modelo IA (exclusivo · auditado · evento).
-- **US-05** ADMIN → habilitar evaluador solo si pasa el golden set (tolerancia PAR-14 · deriva → alerta).
+- **US-04** ADMIN → registrar proveedores y modelos de IA.
+- **US-05** ADMIN → activar y conmutar el modelo en uso (aviso a los servicios).
+- **US-06** Sistema → revisar un modelo contra el golden set y guardar el resultado.
+- **US-07** Sistema → habilitar solo si pasa la tolerancia (PAR-14) y fallback por deriva.
 
 ### T-B · Observabilidad y Soporte Académico
 
 **Épica 4 · Contratos de Lectura** — habilitador transversal: el Reporting consume los datos de los demás equipos.
-- **US-06** Reporting → consume eventos/lecturas de los 6 temas para read models.
+- **US-08** Reporting → recibe los datos de los 6 temas con deduplicación.
+- **US-10** Sistema → controla que los datos estén al día (15 min) y avisa.
 
 **Épica 5 · Observabilidad, Reportes y Panel de Riesgo** — muestra información; PROFESOR consulta solo su curso.
-- **US-07** PROFESOR → reportes de su curso-cohorte (solo su curso · alumno en riesgo).
-- **US-08** ADMIN → consolidado global de métricas (y por curso) (`ALL` solo ADMIN y auditado).
 - **US-09** ADMIN/PROFESOR → exportar reportes (CSV/PDF).
+- **US-11** Sistema → arma el resumen por comisión y calcula el riesgo.
+- **US-12** PROFESOR → panel de sus comisiones (solo su curso · alumno en riesgo).
+- **US-13** ADMIN → tablero de indicadores (anonimato).
+- **US-14** ADMIN → umbrales de aviso y acceso al tablero.
 
 ## 5. Capacidad del equipo
 
