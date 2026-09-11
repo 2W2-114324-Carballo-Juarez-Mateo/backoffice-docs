@@ -1,6 +1,6 @@
 # Tarea 3 — Gestión del proveedor LLM (exclusiva de ADMIN)
 
-> **Sprint 1 · Talla L · ~8 persona-días** · RF-IA-ADM-01..07 (RF-IA-23/24/25/28/31/32/35)
+> **Backlog general · Épica EP-03 · Modelos LLM y Golden Set** · RF-IA-ADM-01..07
 
 ## 1. Objetivo
 Permitir al ADMIN **exclusivamente** administrar los proveedores y modelos de LLM de la plataforma: alta/sustitución/baja, asignación modelo↔función, evaluador único activo, golden set base + calibración y detección de deriva. El **Tema 07 (Evaluación LLM)** consume esta configuración.

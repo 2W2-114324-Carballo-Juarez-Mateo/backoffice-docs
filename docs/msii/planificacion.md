@@ -1,43 +1,38 @@
 # Planificación y dimensionamiento
 
-> Tareas asignadas al Backoffice (Tema 12) según `TUP_PIV_BE_PROPUESTA_ARQ.pdf`, divididas en las **3 columnas del documento** con nombres formales (MoSCoW) y **dimensionadas en talles T-shirt** (S / M / L).
-> **Clasificación por tema (supra-épicas):** **T-A · Gobernanza y Configuración Institucional** (Administración de plataforma · Registro de parámetros PAR · Proveedor LLM) y **T-B · Observabilidad y Soporte Académico** (Contratos de lectura · Reportes docentes).
-> Regla del documento: **"Pedido para empezar"** = núcleo del dominio + lo que otros equipos necesitan para no quedar bloqueados; **"Para más adelante"** = se diseña ahora y se implementa después; **"Podría ser"** = extra si el núcleo está entregado.
+> Backlog **general** (no atado a un Sprint puntual) del Backoffice (Tema 12). Se estructura en **2 temas estratégicos → 5 épicas → 14 historias de usuario**. Estimación: **SP (Fibonacci)** por historia y **horas** por tarea. La capacidad real la define el Excel del equipo. Ver [Sprint 0](/msii/sprint0).
 
-## 🟢 Must — Núcleo (pedido para empezar · sprint 1)
+## 2 temas estratégicos (supra-épicas)
 
-> Propuestas completas: [Índice de tareas](/msii/tareas/).
+- **T-A · Gobernanza y Configuración Institucional** — *quién puede actuar y bajo qué reglas* (ADMIN + modelos de IA). Épicas EP-01..03.
+- **T-B · Observabilidad y Soporte Académico** — *muestra en vez de gobernar* (PROFESOR consulta; ADMIN ve consolidado). Épicas EP-04..05.
 
-| Ítem | RF | Subtareas | Talla | Dependencia |
+## Épicas e Historias (14)
+
+| Tema | Épica | Historias | SP | Prioridad |
 |---|---|---|---|---|
-| [**Administración de plataforma**](/msii/tareas/administracion-plataforma) | RF-CFG-01/05 | Operativa de ADMIN sobre configuración y proveedores · consumo de auth/roles (Tema 01) · permisos de endpoints | **M** | T01 |
-| [**Registro de parámetros PAR-01..24**](/msii/tareas/registro-parametros) | RF-CFG-04/06 | CRUD `GlobalParameter` · versionado · hacia adelante (RF-CFG-06) · evento `GlobalConfigurationChanged` · validación ADMIN | **M** | Temas 03/05/08/10 la leen |
-| [**Gestión del proveedor LLM (exclusiva ADMIN)**](/msii/tareas/proveedor-llm) | RF-IA-ADM-01..07 | CRUD proveedores · asignación modelo↔función · evaluador único · golden set + calibración · detección de deriva · evento `ModelProviderChanged` · auditoría emitida a T01 | **L** | T07 consume |
-| [**Contratos de lectura con los 6 temas**](/msii/tareas/contratos-lectura) | RF-RPT-10 | Acordar contratos (02/04/05/07/08/10) · suscripción a eventos · adapters de lectura · read models base | **L** | Temas 02/04/05/07/08/10 |
-| [**Reportes docentes**](/msii/tareas/reportes-docentes) | RF-RPT-01 | Read models por cohorte · endpoints de reporte · autorización por matrícula (T02) | **M** | Contratos de lectura |
+| T-A | EP-01 · Parámetros Globales | US-01, US-02 | 5+5 | Must |
+| T-A | EP-02 · Administración de la Plataforma | US-03 | 5 | Must |
+| T-A | EP-03 · Modelos LLM y Golden Set | US-04, US-05, US-06, US-07 | 5+5+5+5 | Must |
+| T-B | EP-04 · Contratos de Lectura e Ingesta | US-08, US-10 | 5+3 | Must |
+| T-B | EP-05 · Observabilidad, Reportes y Panel | US-09, US-11, US-12, US-13, US-14 | 5+5+5+5+3 | Could / Should ×4 |
 
-## 🟡 Should — Para más adelante (diseñado ahora, implementado después)
+> **Prioridades:** **Must** = US-01..08 y US-10 (**43 SP**) · **Should** = US-11..14 · **Could** = US-09. Detalle por historia (template + tareas con horas) en el repo: `plan/sprint0/uh/` y `plan/sprint0/tareas.md`.
 
-| Ítem | RF | Subtareas | Talla | Dependencia |
-|---|---|---|---|---|
-| **Panel del profesor (indicador de alumno en riesgo)** | RF-RPT-03 | Modelo `AtRiskStudent` · indicador · endpoint | **M** | Lecturas T04/05/08/10 |
-| **Frescura ≤ 15 minutos** | RF-RPT-06 | Consumo de eventos con SLA de frescura · monitoreo de lag | **S–M** | Contratos |
-| **KPIs con CSAT 5★** | RF-RPT-02 | Agregados anónimos de encuestas · KPI CSAT por cohorte | **S–M** | T04 (encuestas) |
-| **Alertas configurables** | RF-RPT-05 | Reglas de alerta configurables · endpoint `/api/alerts` | **S–M** | Lecturas |
-| **Sin comparación entre docentes** | RF-RPT-07 | Regla de scope en reporting (no cross-docente) · tests | **S** | — |
+## Tareas de dominio (detalle técnico)
 
-## 🔵 Could — Podría ser (extra si el núcleo está entregado)
-
-| Ítem | RF | Subtareas | Talla | Dependencia |
-|---|---|---|---|---|
-| **Exportación de datos** | RF-RPT-04 | Generación CSV/PDF · endpoints `/api/export/*` | **M** | Read models |
-
----
+| Tarea de dominio | RF | Página |
+|---|---|---|
+| Administración de plataforma | RF-CFG-01/05 · RF-ROL | [detalle](/msii/tareas/administracion-plataforma) |
+| Registro de parámetros PAR-01..24 | RF-CFG-04/06 | [detalle](/msii/tareas/registro-parametros) |
+| Gestión del proveedor LLM (exclusiva ADMIN) | RF-IA-ADM-01..07 | [detalle](/msii/tareas/proveedor-llm) |
+| Contratos de lectura con los 6 temas | RF-RPT-10 | [detalle](/msii/tareas/contratos-lectura) |
+| Reportes docentes | RF-RPT-01/02/03/04/05 | [detalle](/msii/tareas/reportes-docentes) |
 
 ## Criterios de prioridad (del documento del profe)
 
-- **Pedido para empezar** = lo que otros equipos necesitan para no quedar bloqueados (los **contratos de lectura** son dependencia crítica del sprint 1: *"sin contratos de lectura acordados en el sprint 1 no hay nada demostrable"*).
-- **Para más adelante** = se prevé en el modelo y el contrato desde el inicio, aunque se implemente después.
-- **Podría ser** = un extra a medias vale menos que un núcleo terminado.
+- **Pedido para empezar (Must)** = núcleo del dominio + lo que otros equipos necesitan (los **contratos de lectura** son la dependencia crítica).
+- **Para más adelante (Should)** = se diseña ahora y se implementa después.
+- **Podría ser (Could)** = un extra a medias vale menos que un núcleo terminado.
 
-> **Transversal:** la **multitenancy (tenant = curso-cohorte + RLS)** se incorpora desde el diseño en las tareas de Reporting (4 y 5) y como RNF (RNF-04b/04c); ver [Multitenancy y RLS](/backend/arquitectura/multitenancy).
+> **Transversal:** la **multitenancy (tenant = curso-cohorte + RLS)** se incorpora desde el diseño en Reporting (caso ADMIN `ALL` incluido); ver [Multitenancy y RLS](/backend/arquitectura/multitenancy).

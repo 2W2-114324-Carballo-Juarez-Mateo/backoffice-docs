@@ -1,6 +1,6 @@
 # Tarea 5 — Reportes docentes
 
-> **Sprint 1 · Talla M · ~5 persona-días** · RF-RPT-01
+> **Backlog general · Épica EP-05 · Observabilidad, Reportes y Panel** · RF-RPT-01
 
 ## 1. Objetivo
 Proveer **reportes docentes** por cohorte: el PROFESOR consulta reportes de sus cohortes y el ADMIN el consolidado de plataforma con desglose por curso, alimentados por los **read models** de los contratos de lectura (Tarea 4). Se respeta el alcance por matrícula (T02) y **sin comparación entre docentes**.

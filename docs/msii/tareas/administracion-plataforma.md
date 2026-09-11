@@ -1,6 +1,6 @@
 # Tarea 1 — Administración de plataforma
 
-> **Sprint 1 · Talla M · ~4 persona-días** · RF-CFG-01/05
+> **Backlog general · Épica EP-02 · Administración de la Plataforma** · RF-CFG-01/05
 
 ## 1. Objetivo
 Proveer la base operativa para que el ADMIN administre la plataforma: operar sobre la configuración global y el proveedor de modelo, con autorización centralizada consumiendo identidad del **Tema 01** y sin acceder a dominios de otros temas.

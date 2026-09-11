@@ -1,6 +1,6 @@
 # Tarea 2 — Registro de parámetros PAR-01..24
 
-> **Sprint 1 · Talla M · ~4 persona-días** · RF-CFG-04/06
+> **Backlog general · Épica EP-01 · Parámetros Globales** · RF-CFG-04/06
 
 ## 1. Objetivo
 Exponer el catálogo global de parámetros de economía y operativos (**PAR-01..PAR-24**, base PRD PAR-01..18 con registro extensible) que el ADMIN configura y los Temas 03/05/08/10 **leen** para aplicar la economía, con versionado y cambios **solo hacia adelante** (RF-CFG-06).

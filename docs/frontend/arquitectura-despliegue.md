@@ -7,8 +7,8 @@
 ```mermaid
 flowchart LR
     N[Navegador] --> NG[Nginx de plataforma]
-    NG -->|"/backoffice"| SSR[App Angular SSR BackOffice :4000]
-    NG -->|"/api/*"| BFF[BFF BackOffice :4100]
+    NG -->|"/backoffice"| SSR[App Angular SSR BackOffice :8095]
+    NG -->|"/api/*"| BFF[BFF BackOffice :8094]
     BFF --> GW[API Gateway de plataforma T01]
     GW --> AD[Administration & Configuration]
     GW --> RP[Reporting & Analytics]
@@ -54,7 +54,7 @@ server {
 
     # Web server: BackOffice (SSR)
     location /backoffice/ {
-        proxy_pass http://backoffice-ssr:4000;
+        proxy_pass http://backoffice-ssr:8095;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
@@ -120,7 +120,7 @@ services:
     ports:
       - "8080:80"
     environment:
-      BFF_URL: http://bff-backoffice:4100
+      BFF_URL: http://bff-backoffice:8094
     depends_on:
       bff-backoffice:
         condition: service_healthy
@@ -129,7 +129,7 @@ services:
     expose:
       - "4100"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4100/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8094/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -142,8 +142,8 @@ services:
 ```nginx
 upstream bff_backend {
     least_conn;
-    server bff-backoffice-1:4100;
-    server bff-backoffice-2:4100;
+    server bff-backoffice-1:8094;
+    server bff-backoffice-2:8094;
 }
 location /api/ {
     proxy_pass http://bff_backend/;

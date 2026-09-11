@@ -1,6 +1,6 @@
 # Tarea 4 — Contratos de lectura con los seis temas
 
-> **Sprint 1 · Talla L · ~7 persona-días** · RF-RPT-10
+> **Backlog general · Épica EP-04 · Contratos de Lectura** · RF-RPT-10
 
 ## 1. Objetivo
 Acordar y consumir los **contratos de lectura** con los seis temas que proveen datos al Backoffice (02 Cursos/Matrícula, 04 Teóricos/Encuestas, 05 Prácticos, 07 Evaluación LLM, 08 Banco, 10 Roadmap). Es la **dependencia crítica del sprint 1**: *"sin contratos de lectura acordados no hay nada demostrable"* (consumidor puro).

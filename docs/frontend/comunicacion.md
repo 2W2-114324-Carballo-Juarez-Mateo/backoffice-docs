@@ -68,7 +68,7 @@ Al recargar una ruta client-side (ej. `/backoffice/cursos/10`), Nginx debe servi
 
 ```nginx
 location /backoffice/ {
-    proxy_pass http://backoffice-ssr:4000;      # SSR
+    proxy_pass http://backoffice-ssr:8095;      # SSR
 }
 location /backoffice/ {                          # respaldo estático
     try_files $uri $uri/ /backoffice/index.html;
