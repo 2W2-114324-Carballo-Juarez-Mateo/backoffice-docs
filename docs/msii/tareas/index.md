@@ -13,7 +13,7 @@
 - **EP-04 · Contratos de Lectura e Ingesta** — US-08 (5) · US-10 (3)
 - **EP-05 · Observabilidad, Reportes y Panel de Riesgo** — US-09 (5) · US-11 (5) · US-12 (5) · US-13 (5) · US-14 (3)
 
-> Prioridad: **Must** = US-01..08 y US-10 (43 SP) · **Should** = US-11..14 · **Could** = US-09. Detalle completo (template + tareas con horas) en el repo: `plan/sprint0/uh/` y `plan/sprint0/tareas.md`.
+> Prioridad: **Must** = US-01..08 y US-10 (43 SP) · **Should** = US-11..14 · **Could** = US-09. Detalle completo (template + tareas con horas) en el repo: `plan/sprint0/uh/` y `plan/tareas.md`.
 
 ## Detalle técnico por dominio (plantillas originales)
 
