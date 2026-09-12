@@ -6,7 +6,7 @@
 
 | Tema | Dominio | Rol del Backoffice |
 |---|---|---|
-| **T12 (Backoffice)** | Administración de plataforma · **PAR-01..24** · proveedor LLM (exclusiva ADMIN) · reportes docentes · panel del profesor (alumno en riesgo) · métricas CSAT · exportación · alertas | **Propietario (2 servicios)** |
+| **T12 (Backoffice)** | Administración de plataforma · **PAR-01..23** · proveedor LLM (exclusiva ADMIN) · reportes docentes · panel del profesor (alumno en riesgo) · métricas CSAT · exportación · alertas | **Propietario (2 servicios)** |
 | **T01** | Identidad, auth, 2FA, roles, token, sesión, **auditoría**, retención, **API Gateway** | **Consume** (auth/autorización/auditoría; gateway de plataforma) |
 | **T02** | Cursos y Matrícula (curso-cohorte, padrón, invitación) | **Consume** (cohorte `course_id`, pertenencia docente) |
 | T03 | Motor de Desafíos | Solo lectura |
@@ -35,8 +35,11 @@
 - **Mecanismo:** Reporting & Analytics lee de los temas **02, 04, 05, 07, 08, 10** (eventos/APIs a través del gateway) para read models. **Sin esos contratos en el sprint 1 no hay nada demostrable.**
 - **Encuestas:** solo agregados anónimos (RF-ENC-04/12).
 
-### 4. Autorización y auditoría
-- **Auth/autorización:** el gateway (T01) valida el token y propaga contexto; la decisión la toma el servicio dueño de la regla (*validar ≠ autorizar*).
-- **Auditoría:** el Backoffice emite eventos de auditoría; T01 los persiste.
+### 4. Autorización y auditoría (contrato cerrado con T01)
+- **Auth/autorización:** el gateway (T01) valida el JWT y propaga contexto (`X-User-Id`, `X-User-Roles`, `X-Principal-Type`, `traceparent`, `X-Request-Id`); la autorización se decide **localmente** con `@PreAuthorize` sobre el rol propagado (no hay endpoint REST de autorización).
+- **Auditoría:** el Backoffice emite eventos en `audit.events` (v1) con el envelope estándar + `role`; T01 los persiste. Lectura: `GET /api/users/audit` (ADMIN, paginado).
 
-> **Convención de eventos:** todos siguen `{eventId, eventType, occurredAt, correlationId, actorId, source, payload}`, con contrato versionado.
+### 5. Retención (contrato cerrado con T01)
+- El Backoffice **no purga por su cuenta**; alinea sus read models al recibir `DataAnonymized`/`RetentionDecisionCreated` (payload `entityType`/`entityId`). Lectura opcional de política: `GET /api/users/retention/*`.
+
+> **Convención de eventos:** todos siguen `{eventId, eventType, occurredAt, correlationId, actorId, role, source, payload}` (`role` propuesto como estándar de plataforma), con contrato versionado.

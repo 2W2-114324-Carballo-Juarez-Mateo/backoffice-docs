@@ -11,7 +11,7 @@
 | RF-CFG-05 | Separación de ámbitos: PROFESOR no puede pisar parámetros globales. |
 | RF-CFG-06 | Cambios de parámetros aplican solo hacia adelante (sin recalcular histórico). |
 
-> **PAR-01..PAR-24** según el doc del profe (base PRD PAR-01..18; registro genérico/extensible — no depende del número).
+> **PAR-01..PAR-23** según el doc del profe (base PRD PAR-01..18; registro genérico/extensible — no depende del número).
 
 ### Catálogo de parámetros (resumen, base PRD)
 

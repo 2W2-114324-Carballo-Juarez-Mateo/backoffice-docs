@@ -31,7 +31,7 @@ El front **nunca habla directo con microservicios**: va al BFF → **API Gateway
 |---|---|
 | **API Gateway (T01)** | Única puerta de `/api`; JWT/2FA, rate limiting, correlation ID |
 | **Identity (T01)** | Login/logout, sesión (cookie httpOnly), roles, expiración (401 → login) |
-| **Administration & Configuration (BackOffice)** | PAR-01..24 (editar config global), proveedores LLM, evaluador, golden set |
+| **Administration & Configuration (BackOffice)** | PAR-01..23 (editar config global), proveedores LLM, evaluador, golden set |
 | **Reporting & Analytics (BackOffice)** | Panel, reportes docentes, métricas/CSAT, exportación, alertas |
 | **Cursos / Matrícula (T02)** | Listar cursos (selector de tenant) y validar pertenencia |
 | **Lecturas 02/04/05/07/08/10** | Solo si el panel lo requiere (ej. progreso, ranking, encuestas) |

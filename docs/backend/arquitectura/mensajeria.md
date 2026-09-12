@@ -7,7 +7,7 @@
 En el Backoffice conviven dos tipos de necesidad de comunicación:
 
 1. **Síncrona (REST por el gateway):** consultas, operaciones y contratos de lectura que necesitan **respuesta inmediata** (ej. validar la pertenencia a una cohorte contra la matrícula T02).
-2. **Asíncrona (eventos por Kafka):** **avisar** cambios de configuración global (PAR-01..24, proveedores LLM) a los consumidores, sin que la respuesta al ADMIN dependa de la propagación.
+2. **Asíncrona (eventos por Kafka):** **avisar** cambios de configuración global (PAR-01..23, proveedores LLM) a los consumidores, sin que la respuesta al ADMIN dependa de la propagación.
 
 La regla que separa ambos caminos es simple: **REST responde preguntas u operaciones; los eventos notifican cambios que otros deben conocer.** Kafka **no reemplaza** al gateway ni convierte la arquitectura en event-driven: es un segundo camino, acotado, para avisar.
 
@@ -75,7 +75,7 @@ El evento identifica el cambio, no transporta lógica de negocio. Con la **versi
 | Topic | Eventos | Consumer group por servicio |
 |---|---|---|
 | `administration.events` | GlobalConfigurationChanged, ModelProviderChanged, ModelFunctionChanged | `gamification`, `challenges`, `bank`, `roadmap`… |
-| `audit.events` | eventos de auditoría | `audit` |
+| `audit.events` (v1) | eventos de auditoría | `audit` |
 | `retention.events` | RetentionDecisionCreated, DataAnonymized | `audit`, `reporting`… |
 | `identity.events` | AdminCreated/Deleted, RoleChanged | `audit`, `reporting`… |
 | `course.events` / `gamification.events` / `ranking.events` / `survey.events` | eventos de otros temas (consumo) | `reporting` |

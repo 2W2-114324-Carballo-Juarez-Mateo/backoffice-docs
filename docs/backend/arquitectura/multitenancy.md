@@ -16,7 +16,7 @@ Elegimos **multitenancy lógico** (base compartida por servicio + columna `cours
 
 | Capa | Multitenancy |
 |---|---|
-| **Administration & Configuration** (PAR-01..24, proveedores, evaluador, golden set) | **Global a propósito** (no tenant-scoped): la economía debe valer igual en todos los cursos. |
+| **Administration & Configuration** (PAR-01..23, proveedores, evaluador, golden set) | **Global a propósito** (no tenant-scoped): la economía debe valer igual en todos los cursos. |
 | **Reporting & Analytics** (métricas, reportes docentes, panel) | **SÍ multitenant**: read models acotados por `course_id` + pertenencia del actor. |
 
 ## 3. TenantContext
@@ -63,7 +63,7 @@ El **ADMIN** (rol validado en T01) necesita dos alcances sobre el reporting:
 | **Puntual** | `course_id` específico | Un curso en particular (mismo camino que un PROFESOR, RLS normal). |
 | **Global** | `'ALL'` (centinela) | Todos los cursos: panel general, comparativas, reportes globales. |
 
-**Mecanismo (sin apagar RLS):** el `TenantContext` setea `app.current_course = 'ALL'` **solo cuando la aplicación autorizó** al ADMIN (o a un rol/permiso explícito `REPORTS_VIEW_ALL`) a operar entre cursos. La política RLS contempla el centinela:
+**Mecanismo (sin apagar RLS):** el `TenantContext` setea `app.current_course = 'ALL'` **solo cuando la aplicación autorizó** al ADMIN a operar entre cursos. **Contrato cerrado con T01:** el alcance se **deriva server-side del rol** propagado (`X-User-Roles` contiene `ADMIN`); **no** existe (ni hace falta) un permiso `REPORTS_VIEW_ALL`, y el alcance **no viaja** en el JWT ni en headers del request. La política RLS contempla el centinela:
 
 ```sql
 CREATE POLICY tenant_isolation ON cohort_metrics_snapshot

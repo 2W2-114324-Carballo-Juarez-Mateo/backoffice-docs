@@ -29,7 +29,7 @@
 
 | Épica | Alcance | RF | Prioridad |
 |---|---|---|---|
-| **Épica 1 — Parámetros Globales** | Reglas de economía y operativas (PAR-01..24) que define el ADMIN y aplican los Temas 03/05/08/10 | RF-CFG-04/06 | Must |
+| **Épica 1 — Parámetros Globales** | Reglas de economía y operativas (PAR-01..23) que define el ADMIN y aplican los Temas 03/05/08/10 | RF-CFG-04/06 | Must |
 | **Épica 2 — Administración de la Plataforma** | Gestión de administradores y roles: quién puede operar | RF-CFG-01/05 · RF-ROL | Must |
 | **Épica 3 — Modelos LLM y Golden Set** | Proveedores/modelos de IA, evaluador, calibración y deriva (exclusivo ADMIN) | RF-IA-ADM-01..07 | Must |
 
@@ -50,7 +50,7 @@
 ### T-A · Gobernanza y Configuración Institucional
 
 **Épica 1 · Parámetros Globales** — el ADMIN configura, los Temas 03/05/08/10 aplican (sin hardcodear).
-- **US-01** ADMIN → crear/editar PAR-01..24 (versionado · hacia adelante · evento).
+- **US-01** ADMIN → crear/editar PAR-01..23 (versionado · hacia adelante · evento).
 - **US-02** Consumidor (T03/05/08/10) → recibe el cambio de parámetro (Outbox · idempotencia · caché TTL 10 min).
 
 **Épica 2 · Administración de la Plataforma** — control de quién opera.

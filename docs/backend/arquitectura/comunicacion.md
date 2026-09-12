@@ -47,7 +47,7 @@ sequenceDiagram
 
 ## Asíncrona — Eventos Kafka
 
-Para procesos desacoplados: auditoría, read models, propagación de cambios. **Kafka** es el broker elegido (ADR-003); Apache **Kafka** queda como alternativa. Patrón **híbrido**: REST por el gateway para lo síncrono + eventos por Kafka para avisar, con **caché local con TTL** en los consumidores.
+Para procesos desacoplados: auditoría, read models, propagación de cambios. **Kafka** es el broker elegido (ADR-003); **RabbitMQ** queda como alternativa. Patrón **híbrido**: REST por el gateway para lo síncrono + eventos por Kafka para avisar, con **caché local con TTL** en los consumidores.
 
 **Publicación (BackOffice):**
 
@@ -82,7 +82,7 @@ sequenceDiagram
 |---|---|---|---|
 | `identity.events` | AdminCreated, AdminDeleted, AdminRecoveryExecuted, RoleChanged | Publica | `audit`, `reporting`… |
 | `administration.events` | GlobalConfigurationChanged, ModelProviderChanged, ModelFunctionChanged | Publica | `gamification`, `challenges`, `bank`, `roadmap`… |
-| `audit.events` | eventos de auditoría | Publica | `audit` |
+| `audit.events` (v1) | eventos de auditoría | Publica | `audit` |
 | `retention.events` | RetentionDecisionCreated, DataAnonymized | Publica | `audit`, `reporting`… |
 | `course.events` | CourseCreated/Activated/Archived, RosterUpdated | **Consume** | `reporting` |
 | `gamification.events` / `ranking.events` / `survey.events` | eventos de otros equipos | **Consume** | `reporting` |

@@ -1,9 +1,9 @@
-# Tarea 2 — Registro de parámetros PAR-01..24
+# Tarea 2 — Registro de parámetros PAR-01..23
 
 > **Backlog general · Épica EP-01 · Parámetros Globales** · RF-CFG-04/06
 
 ## 1. Objetivo
-Exponer el catálogo global de parámetros de economía y operativos (**PAR-01..PAR-24**, base PRD PAR-01..18 con registro extensible) que el ADMIN configura y los Temas 03/05/08/10 **leen** para aplicar la economía, con versionado y cambios **solo hacia adelante** (RF-CFG-06).
+Exponer el catálogo global de parámetros de economía y operativos (**PAR-01..PAR-23**, base PRD PAR-01..18 con registro extensible) que el ADMIN configura y los Temas 03/05/08/10 **leen** para aplicar la economía, con versionado y cambios **solo hacia adelante** (RF-CFG-06).
 
 ## 2. Alcance
 - **In:** CRUD de `GlobalParameter`, versionado, regla de hacia adelante, evento `GlobalConfigurationChanged`, autorización ADMIN.
@@ -47,7 +47,7 @@ sequenceDiagram
 ```text
 GlobalParameter
  ├── id (UUID)
- ├── key (varchar)        ← PAR-01..PAR-24
+ ├── key (varchar)        ← PAR-01..PAR-23
  ├── value (jsonb)        ← valor versionado
  ├── version (int)        ← incrementa por cambio
  ├── updated_by (UUID)    ← FK lógica → T01

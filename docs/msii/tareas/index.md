@@ -20,7 +20,7 @@
 | Tarea de dominio | RF | Página |
 |---|---|---|
 | Administración de plataforma | RF-CFG-01/05 · RF-ROL | [detalle](/msii/tareas/administracion-plataforma) |
-| Registro de parámetros PAR-01..24 | RF-CFG-04/06 | [detalle](/msii/tareas/registro-parametros) |
+| Registro de parámetros PAR-01..23 | RF-CFG-04/06 | [detalle](/msii/tareas/registro-parametros) |
 | Gestión del proveedor LLM (exclusiva ADMIN) | RF-IA-ADM-01..07 | [detalle](/msii/tareas/proveedor-llm) |
 | Contratos de lectura con los 6 temas | RF-RPT-10 | [detalle](/msii/tareas/contratos-lectura) |
 | Reportes docentes | RF-RPT-01/02/03/04/05 | [detalle](/msii/tareas/reportes-docentes) |

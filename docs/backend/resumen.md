@@ -30,7 +30,7 @@ flowchart TB
 
 | Servicio | Responsabilidad | Base |
 |---|---|---|
-| **Administration & Configuration** | PAR-01..24 + **proveedores/modelos de IA** (RF-IA-23/24/25/35) | administration_db |
+| **Administration & Configuration** | PAR-01..23 + **proveedores/modelos de IA** (RF-IA-23/24/25/35) | administration_db |
 | **Reporting & Analytics** | Reportes docentes, panel del profesor (alumno en riesgo), métricas CSAT, exportación, alertas | reporting_db |
 
 ## Consume (no implementa)

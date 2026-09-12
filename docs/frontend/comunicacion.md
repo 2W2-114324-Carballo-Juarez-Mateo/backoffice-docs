@@ -111,7 +111,7 @@ Petición (método+URL+body)
 ### Backend — rate limiting
 
 - Rate limiting en **Gateway** (Spring Cloud Gateway + **Bucket4j** in-memory o **Redis RequestRateLimiter**).
-- Umbrales por endpoint/rol; foco en `/login`, `/api/auth/*`, `/api/audit`.
+- Umbrales por endpoint/rol; foco en `/login`, `/api/auth/*`, `/api/users/audit`.
 - Respuesta **429** con `Retry-After` + **Idempotency Keys** en operaciones críticas (PUT config, baja ADMIN).
 
 ## Marketplace de plugins TUP + agentes de IA (conceptual)

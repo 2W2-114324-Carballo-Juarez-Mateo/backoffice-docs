@@ -1,8 +1,12 @@
 # Endpoints (contratos de API)
 
-> Convención REST consistente, APIs versionadas (`/api/v1/...`), documentadas con OpenAPI/Swagger. Los endpoints son una **propuesta de diseño** a ajustar con los casos de uso definitivos.
+> Convención REST consistente, APIs versionadas (`/api/v1/...`), documentadas con OpenAPI/Swagger. La autorización se valida **siempre** en el microservicio (validar ≠ autorizar): el gateway (T01) valida el JWT y propaga contexto; cada servicio autoriza **localmente** (`@PreAuthorize`) sobre el rol propagado.
 
-## Identity & Access (lado ADMIN)
+## Convención de rutas (contrato con T01)
+
+Toda API pública vive bajo `/api/{servicio}/**` (prefijo definido en el gateway; sin él → 404). Nuestros endpoints propios están bajo `/api/administration/**` o `/api/reports/**`. Los servicios de otros temas se consumen bajo su prefijo (ej. T01 = `/api/users/**`).
+
+## Identity & Access (lado ADMIN — de T01, consumidos)
 
 ```http
 POST /api/auth/login
@@ -15,7 +19,7 @@ POST   /api/admin/accounts
 DELETE /api/admin/accounts/{id}
 ```
 
-## Administration & Configuration
+## Administration & Configuration (`/api/administration/**`)
 
 ```http
 GET  /api/administration/parameters
@@ -34,23 +38,27 @@ POST /api/administration/evaluator/activate
 GET  /api/administration/evaluator/calibration
 ```
 
-## Reporting & Analytics (reportes, métricas, export)
+## Reporting & Analytics (`/api/reports/**` — reportes, métricas, export, alertas)
 
 ```http
 GET /api/reports/platform
 GET /api/reports/courses/{courseId}
 GET /api/reports/courses/{courseId}/metrics
 GET /api/reports/courses/{courseId}/teacher
+GET /api/reports/courses/{courseId}/teacher/risk
 
-GET /api/export/courses/{courseId}      ← CSV/PDF
-GET /api/export/platform
+GET /api/reports/export/courses/{courseId}      ← CSV/PDF
+GET /api/reports/export/platform
+GET /api/reports/alerts                          ← alertas configurables
 ```
 
-## Audit
+## Auditoría y retención — consumidas del Tema 01 (`/api/users/**`)
 
 ```http
-GET /api/audit
-GET /api/audit/{id}
+GET /api/users/audit        ← contrato de lectura de auditoría (ADMIN, paginado)
+GET /api/users/audit/{id}
+GET /api/users/retention/policy          ← opcional (postergado)
+GET /api/users/retention/records         ← opcional (postergado)
 ```
 
 ## Matriz endpoint → rol → alcance
@@ -66,13 +74,14 @@ GET /api/audit/{id}
 | `/api/administration/model-providers*` | GET/POST/PUT/DELETE | ADMIN | exclusivo ADMIN (RF-IA-35) |
 | `/api/administration/model-functions*` | GET/PUT | ADMIN | exclusivo ADMIN (RF-IA-23/24) |
 | `/api/administration/evaluator/*` | GET/POST | ADMIN | exclusivo ADMIN (RF-IA-25/28/31) |
-| `/api/audit` | GET | ADMIN | global |
-| `/api/reports/platform` | GET | ADMIN | global |
-| `/api/reports/courses/{courseId}*` | GET | ADMIN, PROFESOR | PROFESOR: solo su curso (alcance cross-team) |
-| `/api/export/courses/{courseId}` | GET | PROFESOR, ADMIN | PROFESOR: solo su curso |
-| `/api/export/platform` | GET | ADMIN | global |
+| `/api/users/audit` | GET | ADMIN | global (lectura T01) |
+| `/api/reports/platform` | GET | ADMIN | global (alcance `ALL` server-side) |
+| `/api/reports/courses/{courseId}*` | GET | ADMIN, PROFESOR | PROFESOR: solo su cohorte (matrícula T02) |
+| `/api/reports/export/*` | GET | ADMIN / PROFESOR | según recurso |
+| `/api/reports/alerts` | GET | ADMIN, PROFESOR | según recurso |
 
-> La autorización se valida **siempre** en el microservicio propietario (RNF-03), aunque el Gateway ya validó el JWT. El alcance del PROFESOR sobre un curso se valida contra la membresía real provista por el dominio de cursos.
+> **Roles reales (contrato T01):** `ADMIN`, `PROFESOR`, `ALUMNO` (+ `MS` solo service-to-service). **No existe `AUDITOR`**: la lectura de auditoría es `ADMIN`.
+> La autorización se valida **siempre** en el microservicio propietario (RNF-03), aunque el Gateway ya validó el JWT. El alcance del PROFESOR sobre un curso se valida contra la membresía real provista por el dominio de cursos (T02).
 
 ## Manejo de errores (formato uniforme)
 
@@ -101,7 +110,7 @@ GET /api/audit/{id}
 
 ## Rate limiting y 429
 
-- Rate limiting en el **Gateway** (Spring Cloud Gateway + Bucket4j o Redis `RequestRateLimiter`) con umbrales por endpoint y rol; foco en `/login`, `/api/auth/*`, `/api/audit`.
+- Rate limiting en el **Gateway** (Spring Cloud Gateway + Bucket4j o Redis `RequestRateLimiter`) con umbrales por endpoint y rol; foco en `/login`, `/api/auth/*`, `/api/users/audit`.
 - Respuesta **429** con **`Retry-After`**.
 - **Idempotency Keys** en operaciones críticas (PUT de configuración, proveedores, baja de ADMIN).
 - El front aplica **single-flight** + manejo de `Retry-After` (ver [Frontend — Plan de comunicación](/frontend/comunicacion)).

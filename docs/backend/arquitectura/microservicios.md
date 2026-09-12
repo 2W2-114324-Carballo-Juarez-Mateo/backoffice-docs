@@ -6,7 +6,7 @@
 
 **Responsabilidad:** administración de la plataforma: configuración global + **gestión del proveedor de modelo** (exclusiva de ADMIN).
 
-- Registro de parámetros **PAR-01..PAR-24** (base PRD PAR-01..18; registro genérico/extensible).
+- Registro de parámetros **PAR-01..PAR-23** (base PRD PAR-01..18; registro genérico/extensible).
 - **Gestión de proveedores de LLM** (RF-IA-35): alta, sustitución, baja, auditada.
 - **Asignación modelo ↔ función** (RF-IA-23/24) y configuración del evaluador (RF-IA-25/28).
 - **Golden set base y calibración** a nivel plataforma (RF-IA-30/31) y **detección de deriva** (RF-IA-32).
