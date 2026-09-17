@@ -6,12 +6,12 @@
 
 **Responsabilidad:** administración de la plataforma: configuración global + **gestión del proveedor de modelo** (exclusiva de ADMIN).
 
-- Registro de parámetros **PAR-01..PAR-23** (base PRD PAR-01..18; registro genérico/extensible).
-- **Gestión de proveedores de LLM** (RF-IA-35): alta, sustitución, baja, auditada.
+- Registro de parámetros **PAR-01..PAR-23** (base PRD PAR-01..18; **sin PAR-03/06/07** que gestiona T09 · PAR-24 → T01).
+- **Gestión de proveedores de LLM** (RF-IA-35): alta, sustitución, baja, auditada. **Secretos (API Keys) se envían al Vault de T01** y se guarda una referencia enmascarada (RF-IA-ADM-08).
 - **Asignación modelo ↔ función** (RF-IA-23/24) y configuración del evaluador (RF-IA-25/28).
 - **Golden set base y calibración** a nivel plataforma (RF-IA-30/31) y **detección de deriva** (RF-IA-32).
 - Versionado y cambios hacia adelante (RF-CFG-06).
-- Autoriza sus endpoints consumiendo roles del **Tema 01**.
+- **Panel de administración (Admin y Profesor):** matriz de acciones por rol; **GESTOR** y **"PROFESOR con permiso de vista"** a coordinar con T01. **Lista blanca de profesores** (RF-USR-02) a coordinar con T01. **Grupo de soporte** para configuraciones de otros microservicios.\n- Autoriza sus endpoints consumiendo roles del **Tema 01**.
 - **Base:** `administration_db`
 - **No debe:** llamar a los LLM (Tema 07 los usa), ni implementar identidad/auth/auditoría (Tema 01) ni cohorte (Tema 02).
 

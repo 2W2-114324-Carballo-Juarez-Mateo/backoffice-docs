@@ -33,13 +33,13 @@
 | **Épica 2 — Administración de la Plataforma** | Gestión de administradores y roles: quién puede operar | RF-CFG-01/05 · RF-ROL | Must |
 | **Épica 3 — Modelos LLM y Golden Set** | Proveedores/modelos de IA, evaluador, calibración y deriva (exclusivo ADMIN) | RF-IA-ADM-01..07 | Must |
 
-### T-B · Observabilidad y Soporte Académico
+### T-B · Analítica Institucional
 > **Muestra información en vez de gobernarla:** el **PROFESOR** solo consulta (no configura nada); el **ADMIN** ve el consolidado. Incluye el habilitador transversal de los contratos de lectura.
 
 | Épica | Alcance | RF | Prioridad |
 |---|---|---|---|
 | **Épica 4 — Contratos de Lectura** | Consumo de eventos/lecturas de los Temas 02/04/05/07/08/10 para los read models (habilitador del tema) | RF-RPT-10 | Must |
-| **Épica 5 — Observabilidad, Reportes y Panel de Riesgo** | Reportes docentes, panel de métricas, alumno en riesgo, export y alertas | RF-RPT-01/02/03/04/05 | Must / Should / Could |
+| **Épica 5 — Analítica, Reportes y Panel de Riesgo** | Reportes docentes, panel de métricas, alumno en riesgo, export y alertas | RF-RPT-01/02/03/04/05 | Must / Should / Could |
 
 **Futura:** Frontend BackOffice (app Angular + BFF) — a definir.
 
@@ -62,13 +62,13 @@
 - **US-06** Sistema → revisar un modelo contra el golden set y guardar el resultado.
 - **US-07** Sistema → habilitar solo si pasa la tolerancia (PAR-14) y fallback por deriva.
 
-### T-B · Observabilidad y Soporte Académico
+### T-B · Analítica Institucional
 
 **Épica 4 · Contratos de Lectura** — habilitador transversal: el Reporting consume los datos de los demás equipos.
 - **US-08** Reporting → recibe los datos de los 6 temas con deduplicación.
 - **US-10** Sistema → controla que los datos estén al día (15 min) y avisa.
 
-**Épica 5 · Observabilidad, Reportes y Panel de Riesgo** — muestra información; PROFESOR consulta solo su curso.
+**Épica 5 · Analítica, Reportes y Panel de Riesgo** — muestra información; PROFESOR consulta solo su curso.
 - **US-09** ADMIN/PROFESOR → exportar reportes (CSV/PDF).
 - **US-11** Sistema → arma el resumen por comisión y calcula el riesgo.
 - **US-12** PROFESOR → panel de sus comisiones (solo su curso · alumno en riesgo).

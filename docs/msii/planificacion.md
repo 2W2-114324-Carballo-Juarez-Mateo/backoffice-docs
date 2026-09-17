@@ -5,7 +5,7 @@
 ## 2 temas estratégicos (supra-épicas)
 
 - **T-A · Gobernanza y Configuración Institucional** — *quién puede actuar y bajo qué reglas* (ADMIN + modelos de IA). Épicas EP-01..03.
-- **T-B · Observabilidad y Soporte Académico** — *muestra en vez de gobernar* (PROFESOR consulta; ADMIN ve consolidado). Épicas EP-04..05.
+- **T-B · Analítica Institucional** — *muestra en vez de gobernar* (PROFESOR consulta; ADMIN ve consolidado). Épicas EP-04..05.
 
 ## Épicas e Historias (14)
 
@@ -15,7 +15,7 @@
 | T-A | EP-02 · Administración de la Plataforma | US-03 | 5 | Must |
 | T-A | EP-03 · Modelos LLM y Golden Set | US-04, US-05, US-06, US-07 | 5+5+5+5 | Must |
 | T-B | EP-04 · Contratos de Lectura e Ingesta | US-08, US-10 | 5+3 | Must |
-| T-B | EP-05 · Observabilidad, Reportes y Panel | US-09, US-11, US-12, US-13, US-14 | 5+5+5+5+3 | Could / Should ×4 |
+| T-B | EP-05 · Analítica, Reportes y Panel | US-09, US-11, US-12, US-13, US-14 | 5+5+5+5+3 | Could / Should ×4 |
 
 > **Prioridades:** **Must** = US-01..08 y US-10 (**43 SP**) · **Should** = US-11..14 · **Could** = US-09. Detalle por historia (template + tareas con horas) en el repo: `plan/sprint0/uh/` y `plan/tareas.md`.
 
