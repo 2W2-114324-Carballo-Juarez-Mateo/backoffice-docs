@@ -2,7 +2,7 @@
 
 > Backlog **general** (no atado a un Sprint puntual) del Backoffice (Tema 12). Se estructura en **2 temas estratégicos → 5 épicas → 14 historias de usuario**. Estimación: **SP (Fibonacci)** por historia y **horas** por tarea. La capacidad real la define el Excel del equipo. Ver [Sprint 0](/msii/sprint0).
 
-> **✅ Sprint 1 entregado (28/09, verificado en repos oficiales):** backend `2026-P4-BE/tpi-backoffice` `develop` `944992f` y frontend `2026-P4-FE/2026-PIV-TPI-FE` `develop` `cfaac18`. Entregado: **US-01 · US-02 · US-03 · US-08 (acotada) · US-10 (parcial) · EP-04 contratos (T11/T01/T07 cerrados) · Infra · Frontend backoffice (slices 01–14)**. **Sprint 2 (propuesto):** US-04 (fachada real T07), US-05, US-10, US-11, US-12, US-13, US-14 — detalle y reparto en **`plan/sprint2/tareas-sprint2.md`**. Bloqueadas: US-06/US-07 (contrato de calibración T07). Could: US-09, US-15.
+> **✅ Sprint 1 entregado (28/09, verificado en repos oficiales):** backend `2026-P4-BE/tpi-backoffice` `develop` `944992f` y frontend `2026-P4-FE/2026-PIV-TPI-FE` `develop` `cfaac18`. Entregado: **US-01 · US-02 · US-03 · US-08 (acotada) · US-10 (parcial) · EP-04 contratos (T11/T01/T07 cerrados) · Infra · Frontend backoffice (slices 01–14)**. **Sprint 2 (propuesto):** US-04 (fachada real T07), US-05, US-10, US-11, US-12, US-13, US-14 y **US-15 (reportes docentes dinámicos, requisito del profe, P0)** — detalle y reparto en **`plan/sprint2/tareas-sprint2.md`**. Bloqueadas: US-06/US-07 (contrato de calibración T07). Could: US-09.
 
 ## 2 temas estratégicos (supra-épicas)
 
